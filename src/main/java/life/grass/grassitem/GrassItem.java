@@ -18,11 +18,15 @@ public class GrassItem {
         return item;
     }
 
+    public boolean hasNBT(GrassNBTTag tag) {
+        return hasTag(tag.getKey());
+    }
+
     public Optional<Object> getNBT(GrassNBTTag tag) {
         String key = tag.getKey();
         Class clazz = tag.getValueClass();
 
-        if (getTag(key) == null) return Optional.empty();
+        if (!hasTag(key)) return Optional.empty();
 
         if (clazz.isArray()) {
             switch (clazz.getSimpleName()) {
@@ -93,6 +97,10 @@ public class GrassItem {
         }
 
         throw new IllegalArgumentException();
+    }
+
+    private boolean hasTag(String key) {
+        return getTag(key) != null;
     }
 
     private byte getTagByte(String key) {
