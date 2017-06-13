@@ -1,4 +1,4 @@
-package life.grass.grassitem.tag;
+package life.grass.grassitem;
 
 public interface GrassNBTTag {
 

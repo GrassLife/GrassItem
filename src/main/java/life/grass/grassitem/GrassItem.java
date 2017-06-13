@@ -1,11 +1,14 @@
 package life.grass.grassitem;
 
-import life.grass.grassitem.tag.GrassNBTTag;
 import net.minecraft.server.v1_12_R1.*;
+import org.bukkit.Bukkit;
 import org.bukkit.craftbukkit.v1_12_R1.inventory.CraftItemStack;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
+import java.util.logging.Level;
 
 public class GrassItem {
     private ItemStack item;
@@ -19,38 +22,39 @@ public class GrassItem {
     }
 
     public boolean hasNBT(GrassNBTTag tag) {
-        return hasTag(tag.getKey());
+        return hasTag(tag);
     }
 
     public Optional<Object> getNBT(GrassNBTTag tag) {
-        String key = tag.getKey();
         Class clazz = tag.getValueClass();
 
-        if (!hasTag(key)) return Optional.empty();
+        if (!hasTag(tag)) return Optional.empty();
 
         if (clazz.isArray()) {
             switch (clazz.getSimpleName()) {
                 case "Byte":
-                    return Optional.ofNullable(getTagByteArray(key));
+                    return Optional.ofNullable(getTagByteArray(tag));
                 case "Integer":
-                    return Optional.ofNullable(getTagIntArray(key));
+                    return Optional.ofNullable(getTagIntArray(tag));
             }
         } else {
             switch (clazz.getSimpleName()) {
                 case "Byte":
-                    return Optional.of(getTagByte(key));
+                    return Optional.of(getTagByte(tag));
                 case "Short":
-                    return Optional.of(getTagShort(key));
+                    return Optional.of(getTagShort(tag));
                 case "Integer":
-                    return Optional.of(getTagInt(key));
+                    return Optional.of(getTagInt(tag));
                 case "Long":
-                    return Optional.of(getTagLong(key));
+                    return Optional.of(getTagLong(tag));
                 case "Float":
-                    return Optional.of(getTagFloat(key));
+                    return Optional.of(getTagFloat(tag));
                 case "Double":
-                    return Optional.of(getTagDouble(key));
+                    return Optional.of(getTagDouble(tag));
                 case "String":
-                    return Optional.ofNullable(getTagString(key));
+                    return Optional.ofNullable(getTagString(tag));
+                case "HashMap":
+                    return Optional.ofNullable(getTagHashMap(tag));
             }
         }
 
@@ -58,85 +62,113 @@ public class GrassItem {
     }
 
     public void setNBT(GrassNBTTag tag, Object value) {
-        String key = tag.getKey();
-        Class clazz = tag.getValueClass();
+        Class clazz = value.getClass();
+
+        Bukkit.getLogger().log(Level.INFO, clazz.getSimpleName());
 
         if (clazz.isArray()) {
             switch (clazz.getSimpleName()) {
                 case "Byte":
-                    setTagByteArray(key, (byte[]) value);
+                    setTagByteArray(tag, (byte[]) value);
                     return;
                 case "Integer":
-                    setTagIntArray(key, (int[]) value);
+                    setTagIntArray(tag, (int[]) value);
                     return;
             }
         } else {
             switch (clazz.getSimpleName()) {
                 case "Byte":
-                    setTagByte(key, (byte) value);
+                    setTagByte(tag, (byte) value);
                     return;
                 case "Short":
-                    setTagShort(key, (short) value);
+                    setTagShort(tag, (short) value);
                     return;
                 case "Integer":
-                    setTagInt(key, (int) value);
+                    setTagInt(tag, (int) value);
                     return;
                 case "Long":
-                    setTagLong(key, (long) value);
+                    setTagLong(tag, (long) value);
                     return;
                 case "Float":
-                    setTagFloat(key, (float) value);
+                    setTagFloat(tag, (float) value);
                     return;
                 case "Double":
-                    setTagDouble(key, (double) value);
+                    setTagDouble(tag, (double) value);
                     return;
                 case "String":
-                    setTagString(key, (String) value);
+                    setTagString(tag, (String) value);
+                    return;
+                case "HashMap":
+                    setTagHashMap(tag, (HashMap) value);
                     return;
             }
         }
-
-        throw new IllegalArgumentException();
     }
 
-    private boolean hasTag(String key) {
-        return getTag(key) != null;
+    private void setNBT(String key, Class clazz, Object value) {
+        setNBT(new GrassNBTTag() {
+            @Override
+            public String getKey() {
+                return key;
+            }
+
+            @Override
+            public Class getValueClass() {
+                return clazz;
+            }
+        }, value);
     }
 
-    private byte getTagByte(String key) {
-        return (this.<NBTTagByte>getTag(key)).g();
+    private boolean hasTag(GrassNBTTag tag) {
+        return getTag(tag.getKey()) != null;
     }
 
-    private short getTagShort(String key) {
-        return (this.<NBTTagShort>getTag(key).f());
+    private byte getTagByte(GrassNBTTag tag) {
+        return (this.<NBTTagByte>getTag(tag.getKey())).g();
     }
 
-    private int getTagInt(String key) {
-        return (this.<NBTTagInt>getTag(key).e());
+    private short getTagShort(GrassNBTTag tag) {
+        return (this.<NBTTagShort>getTag(tag.getKey()).f());
     }
 
-    private long getTagLong(String key) {
-        return (this.<NBTTagLong>getTag(key).d());
+    private int getTagInt(GrassNBTTag tag) {
+        return (this.<NBTTagInt>getTag(tag.getKey()).e());
     }
 
-    private float getTagFloat(String key) {
-        return (this.<NBTTagFloat>getTag(key).i());
+    private long getTagLong(GrassNBTTag tag) {
+        return (this.<NBTTagLong>getTag(tag.getKey()).d());
     }
 
-    private double getTagDouble(String key) {
-        return (this.<NBTTagDouble>getTag(key).asDouble());
+    private float getTagFloat(GrassNBTTag tag) {
+        return (this.<NBTTagFloat>getTag(tag.getKey()).i());
     }
 
-    private byte[] getTagByteArray(String key) {
-        return (this.<NBTTagByteArray>getTag(key).c());
+    private double getTagDouble(GrassNBTTag tag) {
+        return (this.<NBTTagDouble>getTag(tag.getKey()).asDouble());
     }
 
-    private String getTagString(String key) {
-        return (this.<NBTTagString>getTag(key).c_());
+    private byte[] getTagByteArray(GrassNBTTag tag) {
+        return (this.<NBTTagByteArray>getTag(tag.getKey()).c());
     }
 
-    private int[] getTagIntArray(String key) {
-        return (this.<NBTTagIntArray>getTag(key).d());
+    private String getTagString(GrassNBTTag tag) {
+        return (this.<NBTTagString>getTag(tag.getKey()).c_());
+    }
+
+    private int[] getTagIntArray(GrassNBTTag tag) {
+        return (this.<NBTTagIntArray>getTag(tag.getKey()).d());
+    }
+
+    private Map getTagHashMap(GrassNBTTag tag) {
+        Map map = new HashMap();
+        NBTTagCompound nbtTag = CraftItemStack.asNMSCopy(item).getTag();
+        String key = tag.getKey();
+
+        nbtTag.c().stream()
+                .filter(nbtKey -> nbtKey.startsWith(key + "/Map/"))
+                .forEach(nbtKey -> map.put(nbtKey.replace(key + "/Map/", ""), getTag(nbtKey)));
+
+        return map;
     }
 
     private <T extends NBTBase> T getTag(String key) {
@@ -146,40 +178,52 @@ public class GrassItem {
         return nbtTag == null ? null : (T) nbtTag.get(key);
     }
 
-    private void setTagByte(String key, byte value) {
-        setTag(key, new NBTTagByte(value));
+    private void setTagByte(GrassNBTTag tag, byte value) {
+        setTag(tag.getKey(), new NBTTagByte(value));
     }
 
-    private void setTagShort(String key, short value) {
-        setTag(key, new NBTTagShort(value));
+    private void setTagShort(GrassNBTTag tag, short value) {
+        setTag(tag.getKey(), new NBTTagShort(value));
     }
 
-    private void setTagInt(String key, int value) {
-        setTag(key, new NBTTagInt(value));
+    private void setTagInt(GrassNBTTag tag, int value) {
+        setTag(tag.getKey(), new NBTTagInt(value));
     }
 
-    private void setTagLong(String key, long value) {
-        setTag(key, new NBTTagLong(value));
+    private void setTagLong(GrassNBTTag tag, long value) {
+        setTag(tag.getKey(), new NBTTagLong(value));
     }
 
-    private void setTagFloat(String key, float value) {
-        setTag(key, new NBTTagFloat(value));
+    private void setTagFloat(GrassNBTTag tag, float value) {
+        setTag(tag.getKey(), new NBTTagFloat(value));
     }
 
-    private void setTagDouble(String key, double value) {
-        setTag(key, new NBTTagDouble(value));
+    private void setTagDouble(GrassNBTTag tag, double value) {
+        setTag(tag.getKey(), new NBTTagDouble(value));
     }
 
-    private void setTagByteArray(String key, byte[] value) {
-        setTag(key, new NBTTagByteArray(value));
+    private void setTagByteArray(GrassNBTTag tag, byte[] value) {
+        setTag(tag.getKey(), new NBTTagByteArray(value));
     }
 
-    private void setTagString(String key, String value) {
-        setTag(key, new NBTTagString(value));
+    private void setTagString(GrassNBTTag tag, String value) {
+        setTag(tag.getKey(), new NBTTagString(value));
     }
 
-    private void setTagIntArray(String key, int[] value) {
-        setTag(key, new NBTTagIntArray(value));
+    private void setTagIntArray(GrassNBTTag tag, int[] value) {
+        setTag(tag.getKey(), new NBTTagIntArray(value));
+    }
+
+    private void setTagHashMap(GrassNBTTag tag, HashMap value) {
+        net.minecraft.server.v1_12_R1.ItemStack nmsItem = CraftItemStack.asNMSCopy(item);
+        NBTTagCompound nbtTag = nmsItem.hasTag() ? nmsItem.getTag() : new NBTTagCompound();
+        String key = tag.getKey();
+
+        nbtTag.c().stream()
+                .filter(nbtKey -> nbtKey.startsWith(key + "/Map/"))
+                .forEach(this::removeTag);
+
+        value.forEach((mapKey, mapValue) -> setNBT(tag.getKey() + "/Map/" + mapKey, mapValue.getClass(), mapValue));
     }
 
     private void setTag(String key, NBTBase value) {
@@ -187,6 +231,16 @@ public class GrassItem {
         NBTTagCompound nbtTag = nmsItem.hasTag() ? nmsItem.getTag() : new NBTTagCompound();
 
         nbtTag.set(key, value);
+
+        nmsItem.setTag(nbtTag);
+        item = CraftItemStack.asBukkitCopy(nmsItem);
+    }
+
+    private void removeTag(String key) {
+        net.minecraft.server.v1_12_R1.ItemStack nmsItem = CraftItemStack.asNMSCopy(item);
+        NBTTagCompound nbtTag = nmsItem.hasTag() ? nmsItem.getTag() : new NBTTagCompound();
+
+        nbtTag.remove(key);
 
         nmsItem.setTag(nbtTag);
         item = CraftItemStack.asBukkitCopy(nmsItem);
