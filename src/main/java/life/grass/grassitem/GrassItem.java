@@ -1,14 +1,12 @@
 package life.grass.grassitem;
 
 import net.minecraft.server.v1_12_R1.*;
-import org.bukkit.Bukkit;
 import org.bukkit.craftbukkit.v1_12_R1.inventory.CraftItemStack;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.logging.Level;
 
 public class GrassItem {
     private ItemStack item;
@@ -63,8 +61,6 @@ public class GrassItem {
 
     public void setNBT(GrassNBTTag tag, Object value) {
         Class clazz = value.getClass();
-
-        Bukkit.getLogger().log(Level.INFO, clazz.getSimpleName());
 
         if (clazz.isArray()) {
             switch (clazz.getSimpleName()) {
