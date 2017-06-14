@@ -20,13 +20,13 @@ public class GrassItem {
     }
 
     public boolean hasNBT(GrassNBTTag tag) {
-        return hasTag(tag);
+        return hasVanillaTag(tag);
     }
 
     public Optional<Object> getNBT(GrassNBTTag tag) {
         Class clazz = tag.getValueClass();
 
-        if (!hasTag(tag)) return Optional.empty();
+        if (tag.getValueClass().getName().startsWith("java.lang") && !hasVanillaTag(tag)) return Optional.empty();
 
         if (clazz.isArray()) {
             switch (clazz.getSimpleName()) {
@@ -115,7 +115,7 @@ public class GrassItem {
         }, value);
     }
 
-    private boolean hasTag(GrassNBTTag tag) {
+    private boolean hasVanillaTag(GrassNBTTag tag) {
         return getTag(tag.getKey()) != null;
     }
 
@@ -155,14 +155,15 @@ public class GrassItem {
         return (this.<NBTTagIntArray>getTag(tag.getKey()).d());
     }
 
-    private Map getTagHashMap(GrassNBTTag tag) {
-        Map map = new HashMap();
+    private Map<String, String> getTagHashMap(GrassNBTTag tag) {
+        Map<String, String> map = new HashMap();
         NBTTagCompound nbtTag = CraftItemStack.asNMSCopy(item).getTag();
         String key = tag.getKey();
 
-        nbtTag.c().stream()
-                .filter(nbtKey -> nbtKey.startsWith(key + "/Map/"))
-                .forEach(nbtKey -> map.put(nbtKey.replace(key + "/Map/", ""), getTag(nbtKey)));
+        if (nbtTag != null)
+            nbtTag.c().stream()
+                    .filter(nbtKey -> nbtKey.startsWith(key + "/Map/"))
+                    .forEach(nbtKey -> map.put(nbtKey.replace(key + "/Map/", ""), getTag(nbtKey).toString()));
 
         return map;
     }
