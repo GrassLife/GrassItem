@@ -45,6 +45,17 @@ public class GrassJson {
         else return Optional.of(new GrassJson(jsonObject, GrassItemHandler.getDynamicDataMapFromItemStack(maskItem)));
     }
 
+    public static Optional<GrassJson> findGrassJsonFromItemStack(ItemStack item) {
+        String uniqueName = GrassItemHandler.findUniqueNameFromItemStack(item).orElse(null);
+        JsonObject jsonObject;
+
+        if (uniqueName == null || uniqueName.equalsIgnoreCase("")) uniqueName = "Vanilla_" + item.getType().toString();
+        jsonObject = jsonBucket.findJsonObject(uniqueName).orElse(null);
+
+        if (jsonObject == null) return Optional.empty();
+        else return Optional.of(new GrassJson(jsonObject, GrassItemHandler.getDynamicDataMapFromItemStack(item)));
+    }
+
     public void setMask(ItemStack maskItem) {
         maskMap = GrassItemHandler.getDynamicDataMapFromItemStack(maskItem);
     }
