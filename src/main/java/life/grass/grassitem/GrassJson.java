@@ -46,6 +46,8 @@ public class GrassJson {
     }
 
     public static Optional<GrassJson> findGrassJsonFromItemStack(ItemStack item) {
+        if (item == null) return Optional.empty();
+
         String uniqueName = GrassItemHandler.findUniqueNameFromItemStack(item).orElse(null);
         JsonObject jsonObject;
 
