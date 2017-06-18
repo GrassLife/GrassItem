@@ -52,7 +52,7 @@ public class GrassItemHandler {
         net.minecraft.server.v1_12_R1.ItemStack nmsItem = CraftItemStack.asNMSCopy(item);
         NBTTagCompound nbtTag = nmsItem.getTag();
 
-        return nbtTag == null || !nbtTag.hasKey(key) ? null : nbtTag.get(key).toString();
+        return nbtTag == null || !nbtTag.hasKey(key) ? null : nbtTag.get(key).toString().replace("\"", "");
     }
 
     private static ItemStack setNBTString(ItemStack item, String key, String value) {

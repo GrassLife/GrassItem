@@ -3,7 +3,6 @@ package life.grass.grassitem;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
@@ -11,7 +10,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.logging.Level;
 
 public class GrassJson {
     private static Gson gson;
@@ -92,7 +90,7 @@ public class GrassJson {
 
     public Optional<String> getDynamicDataAsString(String key) {
         JsonElement jsonElement = exploreJsonElement(key);
-        return Optional.ofNullable(jsonElement == null ? null : jsonElement.getAsString());
+        return Optional.ofNullable(jsonElement == null ? null : jsonElement.getAsString().replace("\"", ""));
     }
 
     public Optional<Integer> getDynamicDataAsInteger(String key) {
@@ -140,7 +138,8 @@ public class GrassJson {
     }
 
     public Optional<String> getStaticDataAsString(String key) {
-        return Optional.ofNullable(json.getAsJsonObject("StaticData").get(key).getAsString());
+        JsonElement element = json.getAsJsonObject("StaticData").get(key);
+        return Optional.ofNullable(element == null ? null : json.getAsJsonObject("StaticData").get(key).getAsString().replace("\"", ""));
     }
 
     private JsonElement exploreJsonElement(String key) {
