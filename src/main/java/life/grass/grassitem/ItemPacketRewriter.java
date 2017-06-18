@@ -52,10 +52,9 @@ public class ItemPacketRewriter {
 
     private void rewriteItem(ItemStack item) {
         if (item == null) return;
-        String uniqueName = GrassItemHandler.findUniqueNameFromItemStack(item).orElse(null);
-        GrassJson json = GrassJson.findGrassJson(uniqueName).orElse(null);
+        GrassJson json = GrassJson.findGrassJsonFromItemStack(item).orElse(null);
 
-        if (uniqueName == null || json == null) return;
+        if (json == null) return;
 
         item.setType(json.getMaterial());
         item.setDurability(json.getMeta());
