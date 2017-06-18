@@ -2,3 +2,4 @@ name: GrassItem
 version: ${project.version}
 main: life.grass.grassitem.Main
 authors: [GrassLife]
+depend: [ProtocolLib]
