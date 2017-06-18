@@ -42,11 +42,11 @@ public class GrassJson {
         JsonObject jsonObject = jsonBucket.findJsonObject(uniqueName).orElse(null);
 
         if (jsonObject == null) return Optional.empty();
-        else return Optional.of(new GrassJson(jsonObject, ItemHandler.getDynamicDataMapFromItemStack(maskItem)));
+        else return Optional.of(new GrassJson(jsonObject, GrassItemHandler.getDynamicDataMapFromItemStack(maskItem)));
     }
 
     public void setMask(ItemStack maskItem) {
-        maskMap = ItemHandler.getDynamicDataMapFromItemStack(maskItem);
+        maskMap = GrassItemHandler.getDynamicDataMapFromItemStack(maskItem);
     }
 
     public String getUniqueName() {

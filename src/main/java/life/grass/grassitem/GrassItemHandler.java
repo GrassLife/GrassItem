@@ -8,7 +8,7 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.*;
 
-public class ItemHandler {
+public class GrassItemHandler {
     private static Gson gson;
 
     static {

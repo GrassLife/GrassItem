@@ -52,7 +52,7 @@ public class ItemPacketRewriter {
 
     private void rewriteItem(ItemStack item) {
         if (item == null) return;
-        String uniqueName = ItemHandler.findUniqueNameFromItemStack(item).orElse(null);
+        String uniqueName = GrassItemHandler.findUniqueNameFromItemStack(item).orElse(null);
         GrassJson json = GrassJson.findGrassJson(uniqueName).orElse(null);
 
         if (uniqueName == null || json == null) return;
