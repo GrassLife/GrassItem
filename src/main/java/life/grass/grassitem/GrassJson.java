@@ -3,6 +3,7 @@ package life.grass.grassitem;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
@@ -10,6 +11,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.logging.Level;
 
 public class GrassJson {
     private static Gson gson;
@@ -53,6 +55,7 @@ public class GrassJson {
         JsonObject jsonObject;
 
         if (uniqueName == null || uniqueName.equalsIgnoreCase("")) uniqueName = "Vanilla_" + item.getType().toString();
+        uniqueName = uniqueName.replace("\"", "");
         jsonObject = jsonBucket.findJsonObject(uniqueName).orElse(null);
 
         if (jsonObject == null) return Optional.empty();
