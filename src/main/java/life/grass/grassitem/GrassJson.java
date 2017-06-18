@@ -121,6 +121,7 @@ public class GrassJson {
 
         if (mask == null || mask.equalsIgnoreCase("")) return Optional.of(value);
 
+        mask = mask.replace("\"", "");
         String subtractedMask = mask.substring(1);
         if (mask.startsWith("+")) {
             return Optional.of(value + Double.valueOf(subtractedMask));
