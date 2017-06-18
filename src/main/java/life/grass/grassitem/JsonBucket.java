@@ -12,7 +12,7 @@ import java.util.Map;
 import java.util.Optional;
 
 public class JsonBucket {
-    private static final String JSON_DIR_PATH = Main.getInstance().getDataFolder().getPath() + File.separator + "json" + File.separator;
+    private static final String JSON_DIR_PATH = Main.getInstance().getDataFolder().getPath() + File.separator + "json";
 
     private static Gson gson;
     private static JsonBucket jsonBucket;
@@ -27,7 +27,10 @@ public class JsonBucket {
     private JsonBucket() {
         jsonObjectMap = new HashMap<>();
 
-        Arrays.stream(new File(JSON_DIR_PATH).listFiles())
+        File folder = new File(JSON_DIR_PATH);
+        if(!folder.exists()) folder.mkdirs();
+
+        Arrays.stream(folder.listFiles())
                 .filter(file -> file.getName().endsWith(".json"))
                 .forEach(json -> loadJsonFromFile(json).ifPresent(jsonObject -> jsonObjectMap.put(jsonObject.get("UniqueName").getAsString(), jsonObject)));
     }
