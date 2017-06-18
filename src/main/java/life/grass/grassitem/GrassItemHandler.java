@@ -20,10 +20,11 @@ public class GrassItemHandler {
     }
 
     public static ItemStack putDynamicDataToItemStack(ItemStack item, String key, String value) {
-        return setNBTString(item, "Dynamic/" + key, value);
+        return setNBTString(item, "DynamicData/" + key, value);
     }
 
     public static Optional<String> findUniqueNameFromItemStack(ItemStack item) {
+        if (item == null) return Optional.empty();
         return Optional.ofNullable(getNBTString(item, "UniqueName"));
     }
 
@@ -33,8 +34,8 @@ public class GrassItemHandler {
 
         List<String> dynamicTagList = new ArrayList<>();
         nbtTag.c().stream()
-                .filter(nbt -> nbt.startsWith("Dynamic/"))
-                .map(nbt -> nbt.replace("Dynamic/", ""))
+                .filter(nbt -> nbt.startsWith("DynamicData/"))
+                .map(nbt -> nbt.replace("DynamicData/", ""))
                 .forEach(dynamicTagList::add);
 
         Map<String, String> dynamicDataMap = new HashMap<>();
@@ -44,7 +45,7 @@ public class GrassItemHandler {
     }
 
     public static Optional<String> findDynamicDataFromItemStack(ItemStack item, String tag) {
-        return Optional.ofNullable(getNBTString(item, "Dynamic/" + tag));
+        return Optional.ofNullable(getNBTString(item, "DynamicData/" + tag));
     }
 
     private static String getNBTString(ItemStack item, String key) {

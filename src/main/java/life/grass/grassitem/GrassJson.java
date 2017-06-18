@@ -1,6 +1,7 @@
 package life.grass.grassitem;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
@@ -87,15 +88,18 @@ public class GrassJson {
     }
 
     public Optional<String> getDynamicDataAsString(String key) {
-        return Optional.ofNullable(json.getAsJsonObject("DynamicData").get(key).getAsString());
+        JsonElement jsonElement = exploreJsonElement(key);
+        return Optional.ofNullable(jsonElement == null ? null : jsonElement.getAsString());
     }
 
     public Optional<Integer> getDynamicDataAsInteger(String key) {
-        return Optional.of(json.getAsJsonObject("DynamicData").get(key).getAsInt());
+        JsonElement jsonElement = exploreJsonElement(key);
+        return Optional.ofNullable(jsonElement == null ? null : jsonElement.getAsInt());
     }
 
     public Optional<Double> getDynamicDataAsDouble(String key) {
-        return Optional.of(json.getAsJsonObject("DynamicData").get(key).getAsDouble());
+        JsonElement jsonElement = exploreJsonElement(key);
+        return Optional.ofNullable(jsonElement == null ? null : jsonElement.getAsDouble());
     }
 
     public Optional<Integer> getDynamicDataAsMaskedInteger(String key) {
@@ -111,8 +115,9 @@ public class GrassJson {
     }
 
     public Optional<Double> getDynamicDataAsCalculatedDouble(String key, String mask) {
-        if (!json.getAsJsonObject("DynamicData").has(key)) return Optional.empty();
-        double value = json.getAsJsonObject("DynamicData").get(key).getAsDouble();
+        JsonElement jsonElement = exploreJsonElement(key);
+        if (jsonElement == null) return Optional.empty();
+        double value = jsonElement.getAsDouble();
 
         if (mask == null || mask.equalsIgnoreCase("")) return Optional.of(value);
 
@@ -132,5 +137,9 @@ public class GrassJson {
 
     public Optional<String> getStaticDataAsString(String key) {
         return Optional.ofNullable(json.getAsJsonObject("StaticData").get(key).getAsString());
+    }
+
+    private JsonElement exploreJsonElement(String key) {
+        return json.getAsJsonObject("DynamicData").get(key);
     }
 }
