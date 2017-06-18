@@ -3,52 +3,54 @@ package life.grass.grassitem;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import org.bukkit.Material;
+import org.bukkit.inventory.ItemStack;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
 public class GrassJson {
-    private static final String JSON_DIR_PATH = Main.getInstance().getDataFolder().getPath() + File.separator + "json" + File.separator;
-
-    private static Map<String, GrassJson> grassJsonMap;
     private static Gson gson;
+    private static JsonBucket jsonBucket;
 
     private JsonObject json;
+    private Map<String, String> maskMap;
 
     static {
-        grassJsonMap = new HashMap<>();
         gson = new Gson();
-
-        Arrays.stream(new File(JSON_DIR_PATH).listFiles())
-                .filter(file -> file.getName().endsWith(".json"))
-                .forEach(json -> {
-                    String fileName = json.getName().replace(".json", "");
-                    grassJsonMap.put(fileName, loadJsonFromFile(json));
-                });
+        jsonBucket = JsonBucket.getInstance();
     }
 
     private GrassJson(JsonObject json) {
+        this(json, new HashMap<>());
+    }
+
+    private GrassJson(JsonObject json, Map<String, String> maskMap) {
         this.json = json;
+        this.maskMap = maskMap;
     }
 
     public static Optional<GrassJson> findGrassJson(String uniqueName) {
-        return Optional.ofNullable(grassJsonMap.getOrDefault(uniqueName, null));
+        JsonObject jsonObject = jsonBucket.findJsonObject(uniqueName).orElse(null);
+
+        if (jsonObject == null) return Optional.empty();
+        else return Optional.of(new GrassJson(jsonObject));
     }
 
-    private static GrassJson loadJsonFromFile(File file) {
-        JsonObject root;
-        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
-            root = gson.fromJson(br, JsonObject.class);
-        } catch (Exception ex) {
-            return null;
-        }
+    public static Optional<GrassJson> findGrassJson(String uniqueName, ItemStack maskItem) {
+        JsonObject jsonObject = jsonBucket.findJsonObject(uniqueName).orElse(null);
 
-        return new GrassJson(root);
+        if (jsonObject == null) return Optional.empty();
+        else return Optional.of(new GrassJson(jsonObject, ItemHandler.getDynamicDataMapFromItemStack(maskItem)));
+    }
+
+    public void setMask(ItemStack maskItem) {
+        maskMap = ItemHandler.getDynamicDataMapFromItemStack(maskItem);
+    }
+
+    public String getUniqueName() {
+        return json.get("UniqueName").getAsString();
     }
 
     public Material getMaterial() {
@@ -83,13 +85,23 @@ public class GrassJson {
         return Optional.of(json.getAsJsonObject("DynamicData").get(key).getAsDouble());
     }
 
+    public Optional<Integer> getDynamicDataAsMaskedInteger(String key) {
+        return getDynamicDataAsCalculatedInteger(key, maskMap.getOrDefault(key, null));
+    }
+
     public Optional<Integer> getDynamicDataAsCalculatedInteger(String key, String mask) {
         return getDynamicDataAsCalculatedDouble(key, mask).map(Double::intValue);
+    }
+
+    public Optional<Double> getDynamicDataAsMaskedDouble(String key) {
+        return getDynamicDataAsCalculatedDouble(key, maskMap.getOrDefault(key, null));
     }
 
     public Optional<Double> getDynamicDataAsCalculatedDouble(String key, String mask) {
         if (!json.getAsJsonObject("DynamicData").has(key)) return Optional.empty();
         double value = json.getAsJsonObject("DynamicData").get(key).getAsDouble();
+
+        if (mask == null || mask.equalsIgnoreCase("")) return Optional.of(value);
 
         String subtractedMask = mask.substring(1);
         if (mask.startsWith("+")) {
