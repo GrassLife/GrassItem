@@ -1,5 +1,5 @@
 name: GrassItem
 version: ${project.version}
-main: life.grass.grassitem.Main
+main: life.grass.grassitem.GrassItem
 authors: [GrassLife]
 depend: [ProtocolLib]

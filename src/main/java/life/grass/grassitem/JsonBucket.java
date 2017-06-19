@@ -12,7 +12,7 @@ import java.util.Map;
 import java.util.Optional;
 
 public class JsonBucket {
-    private static final String JSON_DIR_PATH = Main.getInstance().getDataFolder().getPath() + File.separator + "json";
+    private static final String JSON_DIR_PATH = GrassItem.getInstance().getDataFolder().getPath() + File.separator + "json";
 
     private static Gson gson;
     private static JsonBucket jsonBucket;

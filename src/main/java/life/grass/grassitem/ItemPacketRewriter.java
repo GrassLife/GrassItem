@@ -52,14 +52,11 @@ public class ItemPacketRewriter {
 
     private void rewriteItem(ItemStack item) {
         if (item == null) return;
-        GrassJson json = GrassJson.findGrassJsonFromItemStack(item).orElse(null);
+        GrassJson json = ItemHandler.getGrassJson(item);
 
         if (json == null) return;
-
-        item.setType(json.getMaterial());
-        item.setDurability(json.getMeta());
-
         ItemMeta meta = item.getItemMeta();
+
         meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', json.getDisplayName()));
 
         List<String> lore = new ArrayList<>();

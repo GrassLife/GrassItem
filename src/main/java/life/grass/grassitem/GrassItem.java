@@ -4,8 +4,8 @@ import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
-public class Main extends JavaPlugin {
-    private static Main instance;
+public class GrassItem extends JavaPlugin {
+    private static GrassItem instance;
     private static ProtocolManager protocolManager;
 
     @Override
@@ -28,7 +28,7 @@ public class Main extends JavaPlugin {
         super.onLoad();
     }
 
-    public static Main getInstance() {
+    public static GrassItem getInstance() {
         return instance;
     }
 }
