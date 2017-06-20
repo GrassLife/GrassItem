@@ -4,8 +4,10 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import org.bukkit.Material;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.Arrays;
+import java.util.Map;
 
 public class GrassJson {
     private static Gson gson;
@@ -71,4 +73,23 @@ public class GrassJson {
         return jsonElement == null ? null : new GrassJsonDataValue(jsonElement, null);
     }
 
+    public ItemStack toItemStack() {
+        return this.toItemStack(1);
+    }
+
+    public ItemStack toItemStack(int amount) {
+        ItemStack item = new ItemStack(getMaterial(), amount, getMeta());
+
+        item = JsonHandler.putUniqueName(item, getUniqueName());
+
+        JsonObject maskDynamicData = maskJsonObject.getAsJsonObject("DynamicData");
+        if (maskDynamicData != null) {
+            for (Map.Entry<String, JsonElement> entry : maskDynamicData.entrySet()) {
+                if (entry.getValue() != null)
+                    item = JsonHandler.putDynamicData(item, entry.getKey(), entry.getValue());
+            }
+        }
+
+        return item;
+    }
 }
