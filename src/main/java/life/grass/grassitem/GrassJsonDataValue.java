@@ -19,31 +19,31 @@ public class GrassJsonDataValue {
     }
 
     public Optional<String> getAsOverwritedString() {
-        return mask == null ? getAsOriginalString() : Optional.of(mask);
+        return Optional.ofNullable(mask);
     }
 
     public Optional<Integer> getAsOriginalInteger() {
-        return Optional.ofNullable(getAsOriginalDouble().isPresent() ? getAsOriginalDouble().get().intValue() : null);
+        return Optional.of(getAsOriginalDouble().get().intValue());
     }
 
     public Optional<Integer> getAsOverwritedInteger() {
-        return Optional.ofNullable(getAsOverwritedDouble().isPresent() ? getAsOverwritedDouble().get().intValue() : null);
+        return Optional.ofNullable(!getAsOverwritedDouble().isPresent() ? null : getAsOverwritedDouble().get().intValue());
     }
 
     public Optional<Integer> getAsMaskedInteger() {
-        return Optional.ofNullable(getAsMaskedDouble().isPresent() ? getAsMaskedDouble().get().intValue() : null);
+        return Optional.of(getAsMaskedDouble().get().intValue());
     }
 
     public Optional<Double> getAsOriginalDouble() {
-        return Optional.ofNullable(jsonElement == null ? null : jsonElement.getAsDouble());
+        return Optional.of(jsonElement == null ? 0 : jsonElement.getAsDouble());
     }
 
     public Optional<Double> getAsOverwritedDouble() {
-        return mask == null ? null : Optional.of(Double.parseDouble(mask));
+        return Optional.ofNullable(mask == null ? null : Double.parseDouble(mask));
     }
 
     public Optional<Double> getAsMaskedDouble() {
-        Double value = getAsOriginalDouble().orElse(0.0);
+        Double value = getAsOriginalDouble().get();
 
         if (mask == null || mask.equalsIgnoreCase("")) return getAsOriginalDouble();
 

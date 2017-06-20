@@ -1,16 +1,18 @@
 package life.grass.grassitem;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import net.minecraft.server.v1_12_R1.NBTTagCompound;
 import net.minecraft.server.v1_12_R1.NBTTagString;
 import org.bukkit.craftbukkit.v1_12_R1.inventory.CraftItemStack;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
-
 public class ItemHandler {
+    private static Gson gson;
+
+    static {
+        gson = new Gson();
+    }
 
     public static GrassJson getGrassJson(ItemStack item) {
         String uniqueName = getNBTString(item, "UniqueName");
@@ -19,14 +21,14 @@ public class ItemHandler {
 
     public static GrassJson getGrassJson(ItemStack item, String uniqueName) {
         if (uniqueName == null) throw new IllegalArgumentException("uniqueName must not be null.");
-        return new GrassJson(uniqueName, getDynamicDataMap(item));
+        return new GrassJson(uniqueName, getMaskJsonObject(item));
     }
 
     private static GrassJson getVanillaGrassJson(ItemStack item) {
         if (item == null) return null;
 
         try {
-            return new GrassJson("Vanilla_" + item.getType().toString(), getDynamicDataMap(item));
+            return new GrassJson("Vanilla_" + item.getType().toString(), getMaskJsonObject(item));
         } catch (IllegalArgumentException ex) {
             return null;
         }
@@ -39,33 +41,27 @@ public class ItemHandler {
     }
 
     public static ItemStack putDynamicData(ItemStack item, String key, Object value) {
-        return setNBTString(item, "DynamicData/" + key, value.toString());
+        JsonObject mapJsonObject = getMaskJsonObject(item);
+        mapJsonObject.addProperty(key, value.toString());
+
+        return setNBTString(item, "DynamicData", gson.toJson(mapJsonObject));
     }
 
-    private static Map<String, String> getDynamicDataMap(ItemStack item) {
-        Set<String> keySet = getNBTKeySet(item).stream()
-                .filter(key -> key.startsWith("DynamicData/"))
-                .map(key -> key.replace("DynamicData/", "").replace("\"", ""))
-                .collect(Collectors.toSet());
+    private static JsonObject getMaskJsonObject(ItemStack item) {
+        String json = getNBTString(item, "DynamicData");
 
-        Map<String, String> dynamicDataMap = new HashMap();
-        keySet.forEach(key -> dynamicDataMap.put(key, getNBTString(item, "DynamicData/" + key)));
+        JsonObject maskJsonObject;
+        if (json == null) maskJsonObject = new JsonObject();
+        else maskJsonObject = gson.fromJson(json.substring(1, json.length() - 1).replace("\\", ""), JsonObject.class);
 
-        return dynamicDataMap;
-    }
-
-    private static Set<String> getNBTKeySet(ItemStack item) {
-        net.minecraft.server.v1_12_R1.ItemStack nmsItem = CraftItemStack.asNMSCopy(item);
-        NBTTagCompound nbtTag = nmsItem.hasTag() ? nmsItem.getTag() : new NBTTagCompound();
-
-        return nbtTag.c();
+        return maskJsonObject;
     }
 
     private static String getNBTString(ItemStack item, String key) {
         net.minecraft.server.v1_12_R1.ItemStack nmsItem = CraftItemStack.asNMSCopy(item);
         NBTTagCompound nbtTag = nmsItem.getTag();
 
-        return nbtTag == null || !nbtTag.hasKey(key) ? null : nbtTag.get(key).toString().replace("\"", "");
+        return nbtTag == null || !nbtTag.hasKey(key) ? null : nbtTag.get(key).toString();
     }
 
     private static ItemStack setNBTString(ItemStack item, String key, String value) {

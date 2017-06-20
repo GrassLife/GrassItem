@@ -6,21 +6,19 @@ import com.google.gson.JsonObject;
 import org.bukkit.Material;
 
 import java.util.Arrays;
-import java.util.Map;
 
 public class GrassJson {
     private static Gson gson;
 
-    private JsonObject root;
-    private Map<String, String> maskMap;
+    private JsonObject root, maskJsonObject;
 
     static {
         gson = new Gson();
     }
 
-    /* package */ GrassJson(String uniqueName, Map<String, String> maskMap) throws IllegalArgumentException {
+    /* package */ GrassJson(String uniqueName, JsonObject maskJsonObject) throws IllegalArgumentException {
         this.root = JsonBucket.getInstance().findJsonObject(uniqueName).orElseThrow(IllegalArgumentException::new);
-        this.maskMap = maskMap;
+        this.maskJsonObject = maskJsonObject;
     }
 
     public String getUniqueName() {
@@ -49,7 +47,7 @@ public class GrassJson {
 
     public GrassJsonDataValue getDynamicValue(String dynamicKey) {
         JsonElement jsonElement = root.getAsJsonObject("DynamicData").get(dynamicKey);
-        return new GrassJsonDataValue(jsonElement, maskMap.get(dynamicKey));
+        return new GrassJsonDataValue(jsonElement, maskJsonObject.get(dynamicKey) == null ? null : maskJsonObject.get(dynamicKey).getAsString());
     }
 
     public GrassJsonDataValue getStaticValue(String staticKey) {
