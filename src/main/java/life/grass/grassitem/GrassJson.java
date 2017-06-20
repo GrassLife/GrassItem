@@ -45,9 +45,25 @@ public class GrassJson {
         return Arrays.asList(gson.fromJson(root.getAsJsonArray("ItemTags"), String[].class)).contains(tag);
     }
 
+    public boolean hasDynamicValue(String dynamicKey) {
+        return hasDynamicValueInItem(dynamicKey) || hasDynamicValueInJson(dynamicKey);
+    }
+
+    public boolean hasDynamicValueInJson(String dynamicKey) {
+        return root.getAsJsonObject("DynamicData").get(dynamicKey) != null;
+    }
+
+    public boolean hasDynamicValueInItem(String dynamicKey) {
+        return !(maskJsonObject == null || maskJsonObject.get(dynamicKey) == null);
+    }
+
     public GrassJsonDataValue getDynamicValue(String dynamicKey) {
         JsonElement jsonElement = root.getAsJsonObject("DynamicData").get(dynamicKey);
         return new GrassJsonDataValue(jsonElement, maskJsonObject.get(dynamicKey) == null ? null : maskJsonObject.get(dynamicKey).getAsString());
+    }
+
+    public boolean hasStaticValue(String staticKey) {
+        return root.getAsJsonObject("StaticData").get(staticKey) != null;
     }
 
     public GrassJsonDataValue getStaticValue(String staticKey) {
