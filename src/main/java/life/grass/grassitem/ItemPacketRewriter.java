@@ -52,7 +52,7 @@ public class ItemPacketRewriter {
 
     private void rewriteItem(ItemStack item) {
         if (item == null) return;
-        GrassJson json = ItemHandler.getGrassJson(item);
+        GrassJson json = JsonHandler.getGrassJson(item);
 
         if (json == null) return;
         ItemMeta meta = item.getItemMeta();

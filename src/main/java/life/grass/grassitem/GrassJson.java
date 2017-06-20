@@ -18,7 +18,7 @@ public class GrassJson {
 
     /* package */ GrassJson(String uniqueName, JsonObject maskJsonObject) throws IllegalArgumentException {
         this.root = JsonBucket.getInstance().findJsonObject(uniqueName).orElseThrow(IllegalArgumentException::new);
-        this.maskJsonObject = maskJsonObject;
+        this.maskJsonObject = maskJsonObject == null ? new JsonObject() : maskJsonObject;
     }
 
     public String getUniqueName() {
@@ -54,7 +54,7 @@ public class GrassJson {
     }
 
     public boolean hasDynamicValueInItem(String dynamicKey) {
-        return !(maskJsonObject == null || maskJsonObject.get(dynamicKey) == null);
+        return maskJsonObject.get(dynamicKey) != null;
     }
 
     public GrassJsonDataValue getDynamicValue(String dynamicKey) {

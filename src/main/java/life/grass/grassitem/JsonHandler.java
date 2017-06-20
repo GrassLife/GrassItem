@@ -7,7 +7,7 @@ import net.minecraft.server.v1_12_R1.NBTTagString;
 import org.bukkit.craftbukkit.v1_12_R1.inventory.CraftItemStack;
 import org.bukkit.inventory.ItemStack;
 
-public class ItemHandler {
+public class JsonHandler {
     private static Gson gson;
 
     static {
@@ -18,6 +18,12 @@ public class ItemHandler {
         String uniqueName = getNBTString(item, "UniqueName");
         return uniqueName == null ? getVanillaGrassJson(item) : getGrassJson(item, uniqueName);
     }
+
+    public static GrassJson getGrassJson(String uniqueName) {
+        if (uniqueName == null) throw new IllegalArgumentException("uniqueName must not be null.");
+        return new GrassJson(uniqueName, null);
+    }
+
 
     public static GrassJson getGrassJson(ItemStack item, String uniqueName) {
         if (uniqueName == null) throw new IllegalArgumentException("uniqueName must not be null.");
