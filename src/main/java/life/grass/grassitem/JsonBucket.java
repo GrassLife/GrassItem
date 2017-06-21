@@ -28,7 +28,7 @@ public class JsonBucket {
         jsonObjectMap = new HashMap<>();
 
         File folder = new File(JSON_DIR_PATH);
-        if(!folder.exists()) folder.mkdirs();
+        if (!folder.exists()) folder.mkdirs();
 
         Arrays.stream(folder.listFiles())
                 .filter(file -> file.getName().endsWith(".json"))
@@ -40,7 +40,7 @@ public class JsonBucket {
     }
 
     /* package */ Optional<JsonObject> findJsonObject(String uniqueName) {
-        return Optional.ofNullable(jsonObjectMap.getOrDefault(uniqueName, null));
+        return Optional.ofNullable(jsonObjectMap.getOrDefault(uniqueName.replace("\"", ""), null));
     }
 
     private static Optional<JsonObject> loadJsonFromFile(File file) {
