@@ -66,7 +66,7 @@ public class ItemPacketRewriter {
                 " / " + json.getDynamicValue("CustomDisplayName").getAsOverwritedString().orElse("") : ""));
 
         List<String> lore = new ArrayList<>();
-        lore.add(ChatColor.translateAlternateColorCodes('&', json.getDescription()));
+        lore.add(ChatColor.DARK_GRAY + json.getDescription());
 
         meta.setLore(lore);
         item.setItemMeta(meta);
