@@ -62,9 +62,8 @@ public class ItemPacketRewriter {
 
         ItemMeta meta = item.getItemMeta();
 
-        meta.setDisplayName(json.getDisplayName() +
-                ChatColor.translateAlternateColorCodes('&', (json.hasDynamicValueInItem("CustomDisplayName") ?
-                        " / " + json.getDynamicValue("CustomDisplayName").getAsOverwritedString().orElse("") : "")));
+        meta.setDisplayName(ChatColor.GRAY + json.getDisplayName() + (json.hasDynamicValueInItem("CustomDisplayName") ?
+                " / " + json.getDynamicValue("CustomDisplayName").getAsOverwritedString().orElse("") : ""));
 
         List<String> lore = new ArrayList<>();
         lore.add(ChatColor.translateAlternateColorCodes('&', json.getDescription()));
