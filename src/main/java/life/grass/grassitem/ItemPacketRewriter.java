@@ -6,6 +6,7 @@ import com.comphenix.protocol.events.ListenerPriority;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -55,9 +56,15 @@ public class ItemPacketRewriter {
         GrassJson json = JsonHandler.getGrassJson(item);
 
         if (json == null) return;
+
+        if (json.hasDynamicValueInItem("CustomMaterial"))
+            item.setType(Material.valueOf(json.getDynamicValue("CustomMaterial").getAsOverwritedString().orElse("COBBLESTONE")));
+
         ItemMeta meta = item.getItemMeta();
 
-        meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', json.getDisplayName()));
+        meta.setDisplayName(json.getDisplayName() +
+                ChatColor.translateAlternateColorCodes('&', (json.hasDynamicValueInItem("CustomDisplayName") ?
+                        " / " + json.getDynamicValue("CustomDisplayName").getAsOverwritedString().orElse("") : "")));
 
         List<String> lore = new ArrayList<>();
         lore.add(ChatColor.translateAlternateColorCodes('&', json.getDescription()));
