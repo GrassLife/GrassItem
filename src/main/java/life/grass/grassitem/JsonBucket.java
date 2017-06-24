@@ -12,12 +12,14 @@ import java.util.Map;
 import java.util.Optional;
 
 public class JsonBucket {
-    private static final String JSON_DIR_PATH = GrassItem.getInstance().getDataFolder().getPath() + File.separator + "json";
+    private static final String ITEMS_DIR_PATH = GrassItem.getInstance().getDataFolder().getPath() + File.separator + "items";
+    private static final String ENCHANTS_DIR_PATH = GrassItem.getInstance().getDataFolder().getPath() + File.separator + "enchants";
 
     private static Gson gson;
     private static JsonBucket jsonBucket;
 
-    private Map<String, JsonObject> jsonObjectMap;
+    private Map<String, JsonObject> grassJsonMap;
+    private Map<String, JsonObject> enchantsMap;
 
     static {
         gson = new Gson();
@@ -25,23 +27,37 @@ public class JsonBucket {
     }
 
     private JsonBucket() {
-        jsonObjectMap = new HashMap<>();
+        grassJsonMap = new HashMap<>();
+        enchantsMap = new HashMap<>();
 
-        File folder = new File(JSON_DIR_PATH);
-        if (!folder.exists()) folder.mkdirs();
+        File itemFolder = new File(ITEMS_DIR_PATH);
+        if (!itemFolder.exists()) itemFolder.mkdirs();
 
-        Arrays.stream(folder.listFiles())
+        File enchantFolder = new File(ENCHANTS_DIR_PATH);
+        if (!enchantFolder.exists()) enchantFolder.mkdirs();
+
+        Arrays.stream(itemFolder.listFiles())
                 .filter(file -> file.getName().endsWith(".json"))
-                .forEach(json -> loadJsonFromFile(json).ifPresent(jsonObject -> jsonObjectMap.put(jsonObject.get("UniqueName").getAsString(), jsonObject)));
+                .forEach(json -> loadJsonFromFile(json).ifPresent(jsonObject -> grassJsonMap.put(jsonObject.get("UniqueName").getAsString(), jsonObject)));
+
+         Arrays.stream(enchantFolder.listFiles())
+                .filter(file -> file.getName().endsWith(".json"))
+                .forEach(json -> loadJsonFromFile(json).ifPresent(jsonObject -> enchantsMap.put(jsonObject.get("Name").getAsString(), jsonObject)));
+
     }
 
     public static JsonBucket getInstance() {
         return jsonBucket;
     }
 
-    /* package */ Optional<JsonObject> findJsonObject(String uniqueName) {
-        return Optional.ofNullable(jsonObjectMap.getOrDefault(uniqueName.replace("\"", ""), null));
+    /* package */ Optional<JsonObject> findGrassJson(String uniqueName) {
+        return Optional.ofNullable(grassJsonMap.getOrDefault(uniqueName.replace("\"", ""), null));
     }
+
+    Optional<JsonObject> findEnchantJson(String name) {
+        return Optional.ofNullable(enchantsMap.getOrDefault(name.replace("\"", ""), null));
+    }
+
 
     private static Optional<JsonObject> loadJsonFromFile(File file) {
         JsonObject root;

@@ -5,6 +5,7 @@ import com.comphenix.protocol.ProtocolManager;
 import com.comphenix.protocol.events.ListenerPriority;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
+import com.google.gson.JsonObject;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
@@ -62,8 +63,15 @@ public class ItemPacketRewriter {
 
         ItemMeta meta = item.getItemMeta();
 
-        meta.setDisplayName(ChatColor.GRAY + json.getDisplayName() + (json.hasDynamicValueInItem("CustomDisplayName") ?
-                " / " + json.getDynamicValue("CustomDisplayName").getAsOverwritedString().orElse("") : ""));
+        String name = ChatColor.GRAY + "";
+        if(json.hasDynamicValue("Enchant/Prefix")) {
+            String title = JsonBucket.getInstance().findEnchantJson(json.getDynamicValue("Enchant/Prefix").getAsOverwritedString().get()).get().get("DisplayName").getAsString();
+            if(title != null) name += title + " ";
+        }
+        name += json.getDisplayName()
+                + (json.hasDynamicValueInItem("CustomDisplayName") ?
+                " / " + json.getDynamicValue("CustomDisplayName").getAsOverwritedString().orElse("") : "");
+        meta.setDisplayName(name);
 
         List<String> lore = new ArrayList<>();
         lore.add(ChatColor.DARK_GRAY + json.getDescription());
