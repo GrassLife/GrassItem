@@ -35,7 +35,6 @@ public class ItemBuilder {
         for(String s: data) {
             String[] itemData = s.split("#");
             if(itemData.length == 1) break;
-            System.out.println(itemData[0] + " " + itemData[1]);
             item = JsonHandler.putDynamicData(item,
                     itemData[0],
                     itemData[1]);
