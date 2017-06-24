@@ -6,7 +6,9 @@ import com.google.gson.JsonObject;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 public class GrassJson {
@@ -19,7 +21,7 @@ public class GrassJson {
     }
 
     /* package */ GrassJson(String uniqueName, JsonObject maskJsonObject) throws IllegalArgumentException {
-        this.root = JsonBucket.getInstance().findJsonObject(uniqueName).orElseThrow(IllegalArgumentException::new);
+        this.root = JsonBucket.getInstance().findGrassJson(uniqueName).orElseThrow(IllegalArgumentException::new);
         this.maskJsonObject = maskJsonObject == null ? new JsonObject() : maskJsonObject;
     }
 
@@ -61,7 +63,11 @@ public class GrassJson {
 
     public GrassJsonDataValue getDynamicValue(String dynamicKey) {
         JsonElement jsonElement = root.getAsJsonObject("DynamicData").get(dynamicKey);
-        return new GrassJsonDataValue(jsonElement, maskJsonObject.get(dynamicKey) == null ? null : maskJsonObject.get(dynamicKey).getAsString());
+        return new GrassJsonDataValue(
+                jsonElement,
+                maskJsonObject.get(dynamicKey) == null ? null : maskJsonObject.get(dynamicKey).getAsString(),
+                getEnchantList(dynamicKey)
+        );
     }
 
     public boolean hasStaticValue(String staticKey) {
@@ -71,6 +77,17 @@ public class GrassJson {
     public GrassJsonDataValue getStaticValue(String staticKey) {
         JsonElement jsonElement = root.getAsJsonObject("StaticData").get(staticKey);
         return jsonElement == null ? null : new GrassJsonDataValue(jsonElement, null);
+    }
+
+    public List<JsonElement> getEnchantList(String key) {
+        ArrayList<JsonElement> list = new ArrayList<>();
+        String[] enchantsPosition = {"Enchant/Prefix", "Enchant/Suffix", "Enchant/Special"};
+        for(String pos: enchantsPosition) {
+            JsonObject dynamicData = root.getAsJsonObject("DynamicData").getAsJsonObject(pos);
+            String enchantName = maskJsonObject.get(pos) == null ? dynamicData.get(pos).getAsString() : maskJsonObject.get(pos).getAsString();
+            JsonBucket.getInstance().findEnchantJson(enchantName).ifPresent(e -> list.add(e));
+        }
+        return list;
     }
 
     public ItemStack toItemStack() {

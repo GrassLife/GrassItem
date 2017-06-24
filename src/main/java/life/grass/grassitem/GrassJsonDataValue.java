@@ -2,14 +2,22 @@ package life.grass.grassitem;
 
 import com.google.gson.JsonElement;
 
+import java.util.List;
 import java.util.Optional;
 
 public class GrassJsonDataValue {
 
     private JsonElement jsonElement;
     private String mask;
+    private List<JsonElement> enchants;
 
-    /* package */ GrassJsonDataValue(JsonElement jsonElement, String mask) {
+    /* package */ GrassJsonDataValue(JsonElement jsonElement, String mask, List<JsonElement> enchants) {
+        this.jsonElement = jsonElement;
+        this.mask = mask == null ? null : mask.replace("\"", "");
+        this.enchants = enchants;
+    }
+
+    GrassJsonDataValue(JsonElement jsonElement, String mask) {
         this.jsonElement = jsonElement;
         this.mask = mask == null ? null : mask.replace("\"", "");
     }
@@ -48,17 +56,28 @@ public class GrassJsonDataValue {
         if (mask == null || mask.equalsIgnoreCase("")) return getAsOriginalDouble();
 
         String subtractedMask = mask.substring(1);
+        Double result = calculate(value, mask, subtractedMask);
 
+        if(enchants != null) {
+            for(JsonElement element: enchants) {
+                result = calculate(result, element.getAsString(), element.getAsString().substring(1));
+            }
+        }
+
+        return Optional.of(result);
+    }
+
+    private double calculate(double base, String mask, String value) {
         if (mask.startsWith("+")) {
-            return Optional.of(value + Double.valueOf(subtractedMask));
+            return base + Double.valueOf(value);
         } else if (mask.startsWith("-")) {
-            return Optional.of(value - Double.valueOf(subtractedMask));
+            return base - Double.valueOf(value);
         } else if (mask.startsWith("*")) {
-            return Optional.of(value * Double.valueOf(subtractedMask));
+            return base * Double.valueOf(value);
         } else if (mask.startsWith("/")) {
-            return Optional.of(value / Double.valueOf(subtractedMask));
+            return base / Double.valueOf(value);
         } else {
-            return Optional.of(Double.valueOf(mask));
+            return Double.valueOf(value);
         }
     }
 }
