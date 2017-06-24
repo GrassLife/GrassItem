@@ -85,7 +85,7 @@ public class GrassJson {
         for(String pos: enchantsPosition) {
             JsonObject dynamicData = root.getAsJsonObject("DynamicData").getAsJsonObject(pos);
             String enchantName = maskJsonObject.get(pos) == null ? dynamicData.get(pos).getAsString() : maskJsonObject.get(pos).getAsString();
-            JsonBucket.getInstance().findEnchantJson(enchantName).ifPresent(e -> list.add(e));
+            JsonBucket.getInstance().findEnchantJson(enchantName).ifPresent(e -> list.add(e.get("Mask").getAsJsonObject().get(key)));
         }
         return list;
     }
