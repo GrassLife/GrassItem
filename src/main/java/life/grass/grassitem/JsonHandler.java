@@ -2,10 +2,14 @@ package life.grass.grassitem;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import javafx.util.converter.LocalDateTimeStringConverter;
 import net.minecraft.server.v1_12_R1.NBTTagCompound;
 import net.minecraft.server.v1_12_R1.NBTTagString;
 import org.bukkit.craftbukkit.v1_12_R1.inventory.CraftItemStack;
 import org.bukkit.inventory.ItemStack;
+
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 
 public class JsonHandler {
     private static Gson gson;
@@ -60,6 +64,16 @@ public class JsonHandler {
 
         return setNBTString(item, "DynamicData", gson.toJson(mapJsonObject));
     }
+
+    public static ItemStack putExpireDateHours(ItemStack item, int hours) {
+        return putDynamicData(item, "ExpireDate", LocalDateTime.now().plusHours(hours));
+    }
+
+    public static String printExpireDate(LocalDateTime localDateTime) {
+        localDateTime = localDateTime.minusMinutes(localDateTime.getMinute() % 10).truncatedTo(ChronoUnit.MINUTES);
+        return new LocalDateTimeStringConverter().toString(localDateTime);
+    }
+
 
     private static JsonObject getMaskJsonObject(ItemStack item) {
         String json = getNBTString(item, "DynamicData");
