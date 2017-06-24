@@ -16,12 +16,20 @@ public class JsonHandler {
 
     public static GrassJson getGrassJson(ItemStack item) {
         String uniqueName = getNBTString(item, "UniqueName");
-        return uniqueName == null ? getVanillaGrassJson(item) : getGrassJson(item, uniqueName);
+        try {
+            return uniqueName == null ? getVanillaGrassJson(item) : getGrassJson(item, uniqueName);
+        } catch (IllegalArgumentException e) {
+            return null;
+        }
     }
 
     public static GrassJson getGrassJson(String uniqueName) {
         if (uniqueName == null) throw new IllegalArgumentException("uniqueName must not be null.");
-        return new GrassJson(uniqueName, null);
+        try {
+            return new GrassJson(uniqueName, null);
+        } catch (IllegalArgumentException e) {
+            return null;
+        }
     }
 
 
