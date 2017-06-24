@@ -21,12 +21,14 @@ public class ItemBuilder {
 
     public static ItemStack buildByConfigString(String configString) {
         String uniqueName = configString.split(":")[0];
+        ItemStack item;
         if(uniqueName.startsWith("Vanilla")) {
             Material material = Material.getMaterial(uniqueName.replaceAll("Vanilla_", ""));
-            return new ItemStack(material);
+            item = new ItemStack(material);
+        } else {
+            item = buildByUniqueName(uniqueName);
         }
         String[] data = configString.split(":")[1].split(",");
-        ItemStack item = buildByUniqueName(uniqueName);
         if(item == null) return null;
         for(String s: data) {
             item = JsonHandler.putDynamicData(item, s.split(".")[0], s.split(".")[1]);
