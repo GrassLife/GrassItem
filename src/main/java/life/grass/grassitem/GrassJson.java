@@ -81,11 +81,26 @@ public class GrassJson {
 
     public List<JsonElement> getEnchantList(String key) {
         ArrayList<JsonElement> list = new ArrayList<>();
-        String[] enchantsPosition = {"Enchant/Prefix", "Enchant/Suffix", "Enchant/Special"};
+        String[] enchantsPosition = {"Enchant/Special", "Enchant/Prefix", "Enchant/Suffix"};
         for(String pos: enchantsPosition) {
-            JsonObject dynamicData = root.getAsJsonObject("DynamicData").getAsJsonObject(pos);
-            String enchantName = maskJsonObject.get(pos) == null ? dynamicData.get(pos).getAsString() : maskJsonObject.get(pos).getAsString();
+            JsonObject dynamicData = root.getAsJsonObject("DynamicData");
+            String enchantName = maskJsonObject.get(pos) == null
+                    ? dynamicData != null && dynamicData.get(pos) != null ? dynamicData.get(pos).getAsString() : ""
+                    : maskJsonObject.get(pos).getAsString();
             JsonBucket.getInstance().findEnchantJson(enchantName).ifPresent(e -> list.add(e.get("Mask").getAsJsonObject().get(key)));
+        }
+        return list;
+    }
+
+    public List<JsonObject> getEnchantList() {
+        ArrayList<JsonObject> list = new ArrayList<>();
+        String[] enchantsPosition = {"Enchant/Special", "Enchant/Prefix", "Enchant/Suffix"};
+        for(String pos: enchantsPosition) {
+            JsonObject dynamicData = root.getAsJsonObject("DynamicData");
+            String enchantName = maskJsonObject.get(pos) == null
+                    ? dynamicData != null && dynamicData.get(pos) != null ? dynamicData.get(pos).getAsString() : ""
+                    : maskJsonObject.get(pos).getAsString();
+            JsonBucket.getInstance().findEnchantJson(enchantName).ifPresent(e -> list.add(e));
         }
         return list;
     }
