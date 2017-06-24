@@ -63,18 +63,34 @@ public class ItemPacketRewriter {
 
         ItemMeta meta = item.getItemMeta();
 
+        // Enchantの設定
         String name = ChatColor.GRAY + "";
         if(json.hasDynamicValue("Enchant/Prefix")) {
             String title = JsonBucket.getInstance().findEnchantJson(json.getDynamicValue("Enchant/Prefix").getAsOverwritedString().get()).get().get("DisplayName").getAsString();
             if(title != null) name += title + " ";
         }
+        // 名前の設定
         name += json.getDisplayName()
                 + (json.hasDynamicValueInItem("CustomDisplayName") ?
                 " / " + json.getDynamicValue("CustomDisplayName").getAsOverwritedString().orElse("") : "");
+        name = name.replaceAll("%name%", json.getDisplayName());
         meta.setDisplayName(name);
 
         List<String> lore = new ArrayList<>();
         lore.add(ChatColor.DARK_GRAY + json.getDescription());
+
+        // 食材周りの設定
+        if(json.hasDynamicValue("ExpireDate")) lore.add(ChatColor.GRAY + "消費期限: " + json.getDynamicValue("ExpireDate").getAsOverwritedString().orElse("-"));
+        if(json.hasDynamicValue("Calorie") && json.hasDynamicValue("Weight"))
+            lore.add(ChatColor.GRAY + json.getDynamicValue("Calorie").getAsMaskedInteger().orElse(0).toString() + "kcal / " + json.getDynamicValue("Weight").getAsMaskedInteger().orElse(0).toString() + "g");
+
+        // 食材効果の設定
+        if(json.hasDynamicValue("FoodEffect/HEAVY_STOMACH")) {
+            lore.add(ChatColor.BLUE + "効果");
+            lore.add(ChatColor.BLUE + "胃もたれ Lv" + json.getDynamicValue("FoodEffect/HEAVY_STOMACH").getAsMaskedInteger());
+        }
+
+
 
         meta.setLore(lore);
         item.setItemMeta(meta);
