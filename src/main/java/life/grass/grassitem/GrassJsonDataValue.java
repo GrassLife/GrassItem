@@ -52,11 +52,7 @@ public class GrassJsonDataValue {
 
     public Optional<Double> getAsMaskedDouble() {
         Double value = getAsOriginalDouble().get();
-
-        if (mask == null || mask.equalsIgnoreCase("")) return getAsOriginalDouble();
-
-        String subtractedMask = mask.substring(1);
-        Double result = calculate(value, mask, subtractedMask);
+        Double result = mask == null || mask.equalsIgnoreCase("") ? value : calculate(value, mask, mask.substring(1));
 
         if(enchants != null) {
             for(JsonElement element: enchants) {
