@@ -12,6 +12,7 @@ public class GrassItem extends JavaPlugin {
     public void onEnable() {
         super.onEnable();
         instance = this;
+        JsonBucket.getInstance();
 
         protocolManager = ProtocolLibrary.getProtocolManager();
         ItemPacketRewriter.getInstance().addListener(protocolManager, this);
