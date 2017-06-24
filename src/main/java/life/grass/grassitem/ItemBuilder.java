@@ -20,7 +20,8 @@ public class ItemBuilder {
     }
 
     public static ItemStack buildByConfigString(String configString) {
-        String uniqueName = configString.split(":")[0];
+        String[] base = configString.split(":");
+        String uniqueName = base[0];
         ItemStack item;
         if(uniqueName.startsWith("Vanilla")) {
             Material material = Material.getMaterial(uniqueName.replaceAll("Vanilla_", ""));
@@ -28,10 +29,16 @@ public class ItemBuilder {
         } else {
             item = buildByUniqueName(uniqueName);
         }
-        String[] data = configString.split(":")[1].split(",");
+        if(base.length == 1) return item;
+        String[] data = base[1].split(",");
         if(item == null) return null;
         for(String s: data) {
-            item = JsonHandler.putDynamicData(item, s.split(".")[0], s.split(".")[1]);
+            String[] itemData = s.split("#");
+            if(itemData.length == 1) break;
+            System.out.println(itemData[0] + " " + itemData[1]);
+            item = JsonHandler.putDynamicData(item,
+                    itemData[0],
+                    itemData[1]);
         }
         return item;
     }
