@@ -20,7 +20,7 @@ public class ItemBuilder {
     }
 
     public static ItemStack buildByConfigString(String configString) {
-        String[] base = configString.split(":");
+        String[] base = configString.split("::");
         String uniqueName = base[0];
         ItemStack item;
         if(uniqueName.startsWith("Vanilla")) {

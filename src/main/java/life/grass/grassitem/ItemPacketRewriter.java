@@ -6,12 +6,15 @@ import com.comphenix.protocol.events.ListenerPriority;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
 import com.google.gson.JsonObject;
+import javafx.util.converter.LocalDateTimeStringConverter;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -80,9 +83,16 @@ public class ItemPacketRewriter {
         lore.add(ChatColor.DARK_GRAY + json.getDescription());
 
         // 食材周りの設定
-        if(json.hasDynamicValue("ExpireDate")) lore.add(ChatColor.GRAY + "消費期限: " + json.getDynamicValue("ExpireDate").getAsOverwritedString().orElse("-"));
-        if(json.hasDynamicValue("Calorie") && json.hasDynamicValue("Weight"))
-            lore.add(ChatColor.GRAY + json.getDynamicValue("Calorie").getAsMaskedInteger().orElse(0).toString() + "kcal / " + json.getDynamicValue("Weight").getAsMaskedInteger().orElse(0).toString() + "g");
+        if(json.hasDynamicValue("ExpireDate")) {
+            LocalDateTime expireDate = LocalDateTime.parse(json.getDynamicValue("ExpireDate").getAsOverwritedString().orElse(LocalDateTime.now().toString()));
+            expireDate = expireDate.minusMinutes(expireDate.getMinute() % 10).truncatedTo(ChronoUnit.MINUTES);
+            lore.add(ChatColor.GRAY + "消費期限: " + new LocalDateTimeStringConverter().toString(expireDate));
+        }
+
+        if(json.hasDynamicValue("Calorie"))
+            lore.add(ChatColor.GRAY + json.getDynamicValue("Calorie").getAsMaskedInteger().orElse(0).toString() + "kcal");
+        if(json.hasDynamicValue("Weight"))
+            lore.add(ChatColor.GRAY + json.getDynamicValue("Weight").getAsMaskedInteger().orElse(0).toString() + "g" );
 
         // 食材効果の設定
         if(json.hasDynamicValue("FoodEffect/HEAVY_STOMACH")) {
