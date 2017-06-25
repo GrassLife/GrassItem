@@ -60,6 +60,9 @@ public class ItemPacketRewriter {
         GrassJson json = JsonHandler.getGrassJson(item);
 
         if (json == null) return;
+        item.setType(json.getMaterial());
+
+        item.setDurability(json.getMeta());
 
         if (json.hasDynamicValueInItem("CustomMaterial"))
             item.setType(Material.valueOf(json.getDynamicValue("CustomMaterial").getAsOverwritedString().orElse("COBBLESTONE")));
@@ -80,7 +83,7 @@ public class ItemPacketRewriter {
         meta.setDisplayName(name);
 
         List<String> lore = new ArrayList<>();
-        lore.add(ChatColor.DARK_GRAY + json.getDescription());
+        lore.add(ChatColor.YELLOW + json.getDescription());
 
         // 食材周りの設定
         if(json.hasDynamicValue("ExpireDate")) {
