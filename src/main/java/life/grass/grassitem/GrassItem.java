@@ -16,6 +16,8 @@ public class GrassItem extends JavaPlugin {
 
         protocolManager = ProtocolLibrary.getProtocolManager();
         ItemPacketRewriter.getInstance().addListener(protocolManager, this);
+
+        getCommand("grassitem").setExecutor(new GrassItemCommandExecutor());
     }
 
     @Override
@@ -31,5 +33,8 @@ public class GrassItem extends JavaPlugin {
 
     public static GrassItem getInstance() {
         return instance;
+    }
+
+    public void refillJsonBucket() {
     }
 }

@@ -27,23 +27,7 @@ public class JsonBucket {
     }
 
     private JsonBucket() {
-        grassJsonMap = new HashMap<>();
-        enchantsMap = new HashMap<>();
-
-        File itemFolder = new File(ITEMS_DIR_PATH);
-        if (!itemFolder.exists()) itemFolder.mkdirs();
-
-        File enchantFolder = new File(ENCHANTS_DIR_PATH);
-        if (!enchantFolder.exists()) enchantFolder.mkdirs();
-
-        Arrays.stream(itemFolder.listFiles())
-                .filter(file -> file.getName().endsWith(".json"))
-                .forEach(json -> loadJsonFromFile(json).ifPresent(jsonObject -> grassJsonMap.put(jsonObject.get("UniqueName").getAsString(), jsonObject)));
-
-         Arrays.stream(enchantFolder.listFiles())
-                .filter(file -> file.getName().endsWith(".json"))
-                .forEach(json -> loadJsonFromFile(json).ifPresent(jsonObject -> enchantsMap.put(jsonObject.get("Name").getAsString(), jsonObject)));
-
+        refillBucket();
     }
 
     public static JsonBucket getInstance() {
@@ -58,6 +42,24 @@ public class JsonBucket {
         return Optional.ofNullable(enchantsMap.getOrDefault(name.replace("\"", ""), null));
     }
 
+    public void refillBucket() {
+        grassJsonMap = new HashMap<>();
+        enchantsMap = new HashMap<>();
+
+        File itemFolder = new File(ITEMS_DIR_PATH);
+        if (!itemFolder.exists()) itemFolder.mkdirs();
+
+        File enchantFolder = new File(ENCHANTS_DIR_PATH);
+        if (!enchantFolder.exists()) enchantFolder.mkdirs();
+
+        Arrays.stream(itemFolder.listFiles())
+                .filter(file -> file.getName().endsWith(".json"))
+                .forEach(json -> loadJsonFromFile(json).ifPresent(jsonObject -> grassJsonMap.put(jsonObject.get("UniqueName").getAsString(), jsonObject)));
+
+        Arrays.stream(enchantFolder.listFiles())
+                .filter(file -> file.getName().endsWith(".json"))
+                .forEach(json -> loadJsonFromFile(json).ifPresent(jsonObject -> enchantsMap.put(jsonObject.get("Name").getAsString(), jsonObject)));
+    }
 
     private static Optional<JsonObject> loadJsonFromFile(File file) {
         JsonObject root;
