@@ -5,8 +5,6 @@ import com.comphenix.protocol.ProtocolManager;
 import com.comphenix.protocol.events.ListenerPriority;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
-import com.google.gson.JsonObject;
-import javafx.util.converter.LocalDateTimeStringConverter;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
@@ -14,6 +12,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
@@ -71,9 +70,9 @@ public class ItemPacketRewriter {
 
         // Enchantの設定
         String name = ChatColor.GRAY + "";
-        if(json.hasDynamicValue("Enchant/Prefix")) {
+        if (json.hasDynamicValue("Enchant/Prefix")) {
             String title = JsonBucket.getInstance().findEnchantJson(json.getDynamicValue("Enchant/Prefix").getAsOverwritedString().get()).get().get("DisplayName").getAsString();
-            if(title != null) name += title + " ";
+            if (title != null) name += title + " ";
         }
         // 名前の設定
         name += json.getDisplayName()
@@ -86,23 +85,22 @@ public class ItemPacketRewriter {
         lore.add(ChatColor.YELLOW + json.getDescription());
 
         // 食材周りの設定
-        if(json.hasDynamicValue("ExpireDate")) {
+        if (json.hasDynamicValue("ExpireDate")) {
             LocalDateTime expireDate = LocalDateTime.parse(json.getDynamicValue("ExpireDate").getAsOverwritedString().orElse(LocalDateTime.now().toString()));
             expireDate = expireDate.minusMinutes(expireDate.getMinute() % 10).truncatedTo(ChronoUnit.MINUTES);
-            lore.add(ChatColor.GRAY + "消費期限: " + new LocalDateTimeStringConverter().toString(expireDate));
+            lore.add(ChatColor.GRAY + "消費期限: " + expireDate.format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss")));
         }
 
-        if(json.hasDynamicValue("Calorie"))
+        if (json.hasDynamicValue("Calorie"))
             lore.add(ChatColor.GRAY + json.getDynamicValue("Calorie").getAsMaskedInteger().orElse(0).toString() + "kcal");
-        if(json.hasDynamicValue("Weight"))
-            lore.add(ChatColor.GRAY + json.getDynamicValue("Weight").getAsMaskedInteger().orElse(0).toString() + "g" );
+        if (json.hasDynamicValue("Weight"))
+            lore.add(ChatColor.GRAY + json.getDynamicValue("Weight").getAsMaskedInteger().orElse(0).toString() + "g");
 
         // 食材効果の設定
-        if(json.hasDynamicValue("FoodEffect/HEAVY_STOMACH")) {
+        if (json.hasDynamicValue("FoodEffect/HEAVY_STOMACH")) {
             lore.add(ChatColor.BLUE + "効果");
             lore.add(ChatColor.BLUE + "胃もたれ Lv" + json.getDynamicValue("FoodEffect/HEAVY_STOMACH").getAsMaskedInteger());
         }
-
 
 
         meta.setLore(lore);

@@ -2,13 +2,13 @@ package life.grass.grassitem;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import javafx.util.converter.LocalDateTimeStringConverter;
 import net.minecraft.server.v1_12_R1.NBTTagCompound;
 import net.minecraft.server.v1_12_R1.NBTTagString;
 import org.bukkit.craftbukkit.v1_12_R1.inventory.CraftItemStack;
 import org.bukkit.inventory.ItemStack;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 
 public class JsonHandler {
@@ -71,7 +71,7 @@ public class JsonHandler {
 
     public static String printExpireDate(LocalDateTime localDateTime) {
         localDateTime = localDateTime.minusMinutes(localDateTime.getMinute() % 10).truncatedTo(ChronoUnit.MINUTES);
-        return new LocalDateTimeStringConverter().toString(localDateTime);
+        return localDateTime.format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss"));
     }
 
 
