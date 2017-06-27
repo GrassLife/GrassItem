@@ -3,3 +3,15 @@ version: ${project.version}
 main: life.grass.grassitem.GrassItem
 authors: [GrassLife]
 depend: [ProtocolLib]
+
+commands:
+  grassitem:
+    usage: /grassitem [reload]
+    permission: grassitem.command
+    permission-message: sorry, you do not have permission to do.
+
+permissions:
+  grassitem.*:
+    default: op
+  grassitem.command:
+    default: op
