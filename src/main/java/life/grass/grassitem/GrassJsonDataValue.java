@@ -56,7 +56,8 @@ public class GrassJsonDataValue {
 
         if(enchants != null) {
             for(JsonElement element: enchants) {
-                result = calculate(result, element.getAsString(), element.getAsString().substring(1));
+                if(element != null)
+                    result = calculate(result, element.getAsString(), element.getAsString().substring(1));
             }
         }
 
