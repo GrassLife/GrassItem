@@ -72,16 +72,19 @@ public class ItemPacketRewriter {
         String name = ChatColor.WHITE + "";
 
         // 腐った設定
-        if(json.hasDynamicValue("ExpireDate") &&
+        if (json.hasDynamicValue("ExpireDate") &&
                 LocalDateTime.parse(json.getDynamicValue("ExpireDate").getAsOverwritedString().orElse(LocalDateTime.now().minusSeconds(1).toString()))
                         .isBefore(LocalDateTime.now())) {
             name += "腐った ";
         }
 
         // Enchantの設定
-        if(json.hasDynamicValue("Enchant/Prefix")) {
-            String title = JsonBucket.getInstance().findEnchantJson(json.getDynamicValue("Enchant/Prefix").getAsOverwritedString().get()).get().get("DisplayName").getAsString();
-            if (title != null) name += title + " ";
+        if (json.hasDynamicValue("Enchant/Prefix")) {
+            String title = "";
+            if (JsonBucket.getInstance().findEnchantJson(json.getDynamicValue("Enchant/Prefix").getAsOverwritedString().orElse("")).isPresent()) {
+                title = JsonBucket.getInstance().findEnchantJson(json.getDynamicValue("Enchant/Prefix").getAsOverwritedString().orElse("")).get().get("DisplayName").getAsString();
+            }
+            name += title + " ";
         }
         // 名前の設定
         name += json.getDisplayName()
@@ -95,20 +98,20 @@ public class ItemPacketRewriter {
 
         lore.add("");
         // 食材周りの設定
-        if(json.hasDynamicValue("Calorie")) {
+        if (json.hasDynamicValue("Calorie")) {
             String cuisine = ChatColor.GRAY + json.getDynamicValue("Calorie").getAsMaskedInteger().orElse(0).toString() + "kcal";
-            if(json.hasDynamicValue("Weight"))
+            if (json.hasDynamicValue("Weight"))
                 cuisine += " / " + json.getDynamicValue("Weight").getAsMaskedInteger().orElse(0).toString() + "g";
             lore.add(cuisine);
         }
 
-        if(json.hasDynamicValue("ExpireDate")) {
+        if (json.hasDynamicValue("ExpireDate")) {
             LocalDateTime expireDate = LocalDateTime.parse(json.getDynamicValue("ExpireDate").getAsOverwritedString().orElse(LocalDateTime.now().toString()));
             expireDate = expireDate.minusMinutes(expireDate.getMinute() % 10).truncatedTo(ChronoUnit.MINUTES);
             lore.add(ChatColor.DARK_GRAY + "消費期限: " + expireDate.format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss")));
         }
 
-        if(json.hasItemTag("Ingredient"))
+        if (json.hasItemTag("Ingredient"))
             lore.add(ChatColor.DARK_GRAY + "調理可能アイテム");
 
         // 食材効果の設定
