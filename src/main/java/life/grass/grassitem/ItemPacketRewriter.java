@@ -117,7 +117,7 @@ public class ItemPacketRewriter {
         // 食材効果の設定
         if (json.hasDynamicValue("FoodEffect/HEAVY_STOMACH")) {
             lore.add(ChatColor.BLUE + "効果");
-            lore.add(ChatColor.BLUE + "胃もたれ Lv" + json.getDynamicValue("FoodEffect/HEAVY_STOMACH").getAsMaskedInteger());
+            lore.add(ChatColor.BLUE + "胃もたれ Lv" + json.getDynamicValue("FoodEffect/HEAVY_STOMACH").getAsMaskedInteger().orElse(0));
         }
 
 
