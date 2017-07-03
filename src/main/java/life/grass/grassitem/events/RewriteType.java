@@ -5,6 +5,7 @@ package life.grass.grassitem.events;
  */
 public enum RewriteType {
     COOKING,
-    TOOL,
-    WEAPON;
+    GATHERER,
+    WEAPON,
+    TOOL;
 }

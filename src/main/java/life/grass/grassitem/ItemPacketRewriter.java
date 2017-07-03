@@ -98,10 +98,12 @@ public class ItemPacketRewriter {
 
         lore.add("");
         // 食材周りの設定
-        ItemRewriteEvent cooking = new ItemRewriteEvent(RewriteType.COOKING, json);
-        Bukkit.getServer().getPluginManager().callEvent(cooking);
-        if(cooking.isShowable()) lore.addAll(cooking.getLore());
-
+        // Loreの設定
+        for(RewriteType type: RewriteType.values()) {
+            ItemRewriteEvent event = new ItemRewriteEvent(type, json);
+            Bukkit.getServer().getPluginManager().callEvent(event);
+            if(event.isShowable()) lore.addAll(event.getLore());
+        }
 
         meta.setLore(lore);
         item.setItemMeta(meta);
