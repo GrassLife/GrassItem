@@ -5,6 +5,9 @@ import com.comphenix.protocol.ProtocolManager;
 import com.comphenix.protocol.events.ListenerPriority;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
+import life.grass.grassitem.events.ItemRewriteEvent;
+import life.grass.grassitem.events.RewriteType;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
@@ -95,27 +98,9 @@ public class ItemPacketRewriter {
 
         lore.add("");
         // 食材周りの設定
-        if(json.hasDynamicValue("Calorie")) {
-            String cuisine = ChatColor.GRAY + json.getDynamicValue("Calorie").getAsMaskedInteger().orElse(0).toString() + "kcal";
-            if(json.hasDynamicValue("Weight"))
-                cuisine += " / " + json.getDynamicValue("Weight").getAsMaskedInteger().orElse(0).toString() + "g";
-            lore.add(cuisine);
-        }
-
-        if(json.hasDynamicValue("ExpireDate")) {
-            LocalDateTime expireDate = LocalDateTime.parse(json.getDynamicValue("ExpireDate").getAsOverwritedString().orElse(LocalDateTime.now().toString()));
-            expireDate = expireDate.minusMinutes(expireDate.getMinute() % 10).truncatedTo(ChronoUnit.MINUTES);
-            lore.add(ChatColor.DARK_GRAY + "消費期限: " + expireDate.format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss")));
-        }
-
-        if(json.hasItemTag("Ingredient"))
-            lore.add(ChatColor.DARK_GRAY + "調理可能アイテム");
-
-        // 食材効果の設定
-        if (json.hasDynamicValue("FoodEffect/HEAVY_STOMACH")) {
-            lore.add(ChatColor.BLUE + "効果");
-            lore.add(ChatColor.BLUE + "胃もたれ Lv" + json.getDynamicValue("FoodEffect/HEAVY_STOMACH").getAsMaskedInteger());
-        }
+        ItemRewriteEvent cooking = new ItemRewriteEvent(RewriteType.COOKING, json);
+        Bukkit.getServer().getPluginManager().callEvent(cooking);
+        if(cooking.isShowable()) lore.addAll(cooking.getLore());
 
 
         meta.setLore(lore);
