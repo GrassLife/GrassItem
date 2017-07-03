@@ -75,16 +75,19 @@ public class ItemPacketRewriter {
         String name = ChatColor.WHITE + "";
 
         // 腐った設定
-        if(json.hasDynamicValue("ExpireDate") &&
+        if (json.hasDynamicValue("ExpireDate") &&
                 LocalDateTime.parse(json.getDynamicValue("ExpireDate").getAsOverwritedString().orElse(LocalDateTime.now().minusSeconds(1).toString()))
                         .isBefore(LocalDateTime.now())) {
             name += "腐った ";
         }
 
         // Enchantの設定
-        if(json.hasDynamicValue("Enchant/Prefix")) {
-            String title = JsonBucket.getInstance().findEnchantJson(json.getDynamicValue("Enchant/Prefix").getAsOverwritedString().get()).get().get("DisplayName").getAsString();
-            if (title != null) name += title + " ";
+        if (json.hasDynamicValue("Enchant/Prefix")) {
+            String title = "";
+            if (JsonBucket.getInstance().findEnchantJson(json.getDynamicValue("Enchant/Prefix").getAsOverwritedString().orElse("")).isPresent()) {
+                title = JsonBucket.getInstance().findEnchantJson(json.getDynamicValue("Enchant/Prefix").getAsOverwritedString().orElse("")).get().get("DisplayName").getAsString();
+            }
+            name += title + " ";
         }
         // 名前の設定
         name += json.getDisplayName()
@@ -98,6 +101,7 @@ public class ItemPacketRewriter {
 
         lore.add("");
         // 食材周りの設定
+
         // Loreの設定
         for(RewriteType type: RewriteType.values()) {
             ItemRewriteEvent event = new ItemRewriteEvent(type, json);

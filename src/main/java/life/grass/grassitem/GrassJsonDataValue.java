@@ -52,18 +52,20 @@ public class GrassJsonDataValue {
 
     public Optional<Double> getAsMaskedDouble() {
         Double value = getAsOriginalDouble().get();
-        Double result = mask == null || mask.equalsIgnoreCase("") ? value : calculate(value, mask, mask.substring(1));
+        Double result = mask == null || mask.equalsIgnoreCase("") ? value : calculate(value, mask);
 
         if(enchants != null) {
             for(JsonElement element: enchants) {
-                result = calculate(result, element.getAsString(), element.getAsString().substring(1));
+                if(element != null)
+                    result = calculate(result, element.getAsString());
             }
         }
 
         return Optional.of(result);
     }
 
-    private double calculate(double base, String mask, String value) {
+    private double calculate(double base, String mask) {
+        String value = mask.substring(1);
         if (mask.startsWith("+")) {
             return base + Double.valueOf(value);
         } else if (mask.startsWith("-")) {
@@ -73,7 +75,11 @@ public class GrassJsonDataValue {
         } else if (mask.startsWith("/")) {
             return base / Double.valueOf(value);
         } else {
-            return Double.valueOf(value);
+            try {
+                return Double.valueOf(mask);
+            } catch(Exception e) {
+                return 0.0;
+            }
         }
     }
 }

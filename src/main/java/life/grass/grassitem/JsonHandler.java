@@ -66,7 +66,8 @@ public class JsonHandler {
     }
 
     public static ItemStack putExpireDateHours(ItemStack item, int hours) {
-        return putDynamicData(item, "ExpireDate", LocalDateTime.now().plusHours(hours));
+        LocalDateTime time = LocalDateTime.now();
+        return putDynamicData(item, "ExpireDate", time.plusHours(hours).minusMinutes(time.getMinute() % 10).truncatedTo(ChronoUnit.MINUTES));
     }
 
     public static String printExpireDate(LocalDateTime localDateTime) {
