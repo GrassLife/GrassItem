@@ -15,8 +15,6 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -61,7 +59,7 @@ public class ItemPacketRewriter {
         if (item == null) return;
         GrassJson json = JsonHandler.getGrassJson(item);
 
-        if (json == null) return;
+        if (json == null || json.getDynamicValue("Ignore").getAsMaskedInteger().orElse(0) == 1) return;
         item.setType(json.getMaterial());
 
         item.setDurability(json.getMeta());
@@ -103,10 +101,10 @@ public class ItemPacketRewriter {
         // 食材周りの設定
 
         // Loreの設定
-        for(RewriteType type: RewriteType.values()) {
+        for (RewriteType type : RewriteType.values()) {
             ItemRewriteEvent event = new ItemRewriteEvent(type, json);
             Bukkit.getServer().getPluginManager().callEvent(event);
-            if(event.isShowable()) lore.addAll(event.getLore());
+            if (event.isShowable()) lore.addAll(event.getLore());
         }
 
         meta.setLore(lore);
