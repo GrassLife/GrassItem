@@ -75,6 +75,34 @@ public class JsonHandler {
         return localDateTime.format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss"));
     }
 
+    public static ItemStack damageItem(ItemStack item) {
+        GrassJson json = getGrassJson(item);
+        if(json == null) return item;
+        if(!json.hasDynamicValue("Toughness")) return item;
+        int toughness = json.getDynamicValue("Toughness").getAsMaskedInteger().orElse(100);
+        int damage = 0;
+        if(toughness == 100) {
+            damage = 1;
+        } else if(toughness >= 100) {
+            damage = Math.random() <= 100.0 / (double) toughness ? 0 : 1;
+        } else {
+            damage = Math.random() <= ((double) (100 - toughness)) / 100.0 ? 2 : 1;
+        }
+
+        int currentDurability = json.getDynamicValue("CurrentDurability").getAsMaskedInteger().orElse(-1);
+        if(currentDurability < 0) return item;
+        return putDynamicData(item,"CurrentDurability", Math.max(0, currentDurability - damage));
+    }
+
+    public static ItemStack repairItem(ItemStack item, int amount) {
+        GrassJson json = getGrassJson(item);
+        if(json == null) return item;
+        int currentDurability = json.getDynamicValue("CurrentDurability").getAsMaskedInteger().orElse(-1);
+        int maxDurability = json.getDynamicValue("MaxDurability").getAsMaskedInteger().orElse(-1);
+        if(currentDurability < 0 || maxDurability < 0) return item;
+        return putDynamicData(item, "CurrentDurability", Math.min(currentDurability, maxDurability + amount));
+    }
+
 
     private static JsonObject getMaskJsonObject(ItemStack item) {
         String json = getNBTString(item, "DynamicData");
@@ -93,7 +121,7 @@ public class JsonHandler {
         return nbtTag == null || !nbtTag.hasKey(key) ? null : nbtTag.get(key).toString();
     }
 
-    private static ItemStack setNBTString(ItemStack item, String key, String value) {
+    public static ItemStack setNBTString(ItemStack item, String key, String value) {
         net.minecraft.server.v1_12_R1.ItemStack nmsItem = CraftItemStack.asNMSCopy(item);
         NBTTagCompound nbtTag = nmsItem.hasTag() ? nmsItem.getTag() : new NBTTagCompound();
         nbtTag.set(key, new NBTTagString(value));

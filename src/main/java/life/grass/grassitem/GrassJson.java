@@ -105,6 +105,10 @@ public class GrassJson {
         return list;
     }
 
+    public GrassJsonReader getJsonReader() {
+        return new GrassJsonReader(this);
+    }
+
     public ItemStack toItemStack() {
         return this.toItemStack(1);
     }

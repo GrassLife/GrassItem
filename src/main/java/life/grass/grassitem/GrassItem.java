@@ -2,6 +2,7 @@ package life.grass.grassitem;
 
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
+import life.grass.grassitem.events.listener.DurabilityChangeListener;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class GrassItem extends JavaPlugin {
@@ -16,6 +17,7 @@ public class GrassItem extends JavaPlugin {
 
         protocolManager = ProtocolLibrary.getProtocolManager();
         ItemPacketRewriter.getInstance().addListener(protocolManager, this);
+        getServer().getPluginManager().registerEvents(new DurabilityChangeListener(), this);
 
         getCommand("grassitem").setExecutor(new GrassItemCommandExecutor());
     }
