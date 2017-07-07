@@ -61,7 +61,7 @@ public class ItemPacketRewriter {
         if (item == null) return;
         GrassJson json = JsonHandler.getGrassJson(item);
 
-        if (json == null) return;
+        if (json == null || json.getDynamicValue("Ignore").getAsMaskedInteger().orElse(0) == 1) return;
         GrassJsonReader jsonReader = json.getJsonReader();
         item.setType(json.getMaterial());
 
