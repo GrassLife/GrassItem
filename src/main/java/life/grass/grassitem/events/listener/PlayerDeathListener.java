@@ -4,7 +4,6 @@ import life.grass.grassitem.GrassItem;
 import life.grass.grassitem.GrassJson;
 import life.grass.grassitem.JsonHandler;
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -24,7 +23,7 @@ public class PlayerDeathListener implements Listener {
             if(item == null) continue;
             GrassJson json = JsonHandler.getGrassJson(item);
             if(json == null || !json.hasDynamicValue(ENCHANT_SPECIAL)) continue;
-            if(json.getDynamicValue(ENCHANT_SPECIAL).getAsMaskedString().orElse("").equals("blessed")) {
+            if(json.getDynamicValue(ENCHANT_SPECIAL).getAsMaskedString().orElse("").equals("Blessed")) {
                 e.getDrops().remove(item);
                 item = JsonHandler.removeDynamicData(item, ENCHANT_SPECIAL);
                 ItemStack finalItem = item;
