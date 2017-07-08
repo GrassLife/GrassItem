@@ -90,7 +90,7 @@ public class JsonHandler {
         if(toughness == 100) {
             damage = 1;
         } else if(toughness >= 100) {
-            damage = Math.random() <= 100.0 / (double) toughness ? 0 : 1;
+            damage = Math.random() <= 100.0 / (double) toughness ? 1 : 0;
         } else {
             damage = Math.random() <= ((double) (100 - toughness)) / 100.0 ? 2 : 1;
         }
