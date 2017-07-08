@@ -23,11 +23,15 @@ public class GrassJsonDataValue {
     }
 
     public Optional<String> getAsOriginalString() {
-        return Optional.ofNullable(jsonElement.getAsString());
+        return Optional.ofNullable(jsonElement == null ? null : jsonElement.getAsString());
     }
 
     public Optional<String> getAsOverwritedString() {
         return Optional.ofNullable(mask);
+    }
+
+    public Optional<String> getAsMaskedString() {
+        return Optional.ofNullable(getAsOverwritedString().orElse(getAsOriginalString().orElse(null)));
     }
 
     public Optional<Integer> getAsOriginalInteger() {

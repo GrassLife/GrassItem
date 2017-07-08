@@ -65,6 +65,12 @@ public class JsonHandler {
         return setNBTString(item, "DynamicData", gson.toJson(mapJsonObject));
     }
 
+    public static ItemStack removeDynamicData(ItemStack item, String key) {
+        JsonObject mapJsonObject = getMaskJsonObject(item);
+        mapJsonObject.remove(key);
+        return setNBTString(item, "DynamicData", gson.toJson(mapJsonObject));
+    }
+
     public static ItemStack putExpireDateHours(ItemStack item, int hours) {
         LocalDateTime time = LocalDateTime.now();
         return putDynamicData(item, "ExpireDate", time.plusHours(hours).minusMinutes(time.getMinute() % 10).truncatedTo(ChronoUnit.MINUTES));
