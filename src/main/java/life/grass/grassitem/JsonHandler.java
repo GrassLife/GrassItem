@@ -5,6 +5,7 @@ import com.google.gson.JsonObject;
 import net.minecraft.server.v1_12_R1.NBTTagCompound;
 import net.minecraft.server.v1_12_R1.NBTTagString;
 import org.bukkit.craftbukkit.v1_12_R1.inventory.CraftItemStack;
+import org.bukkit.entity.HumanEntity;
 import org.bukkit.inventory.ItemStack;
 
 import java.time.LocalDateTime;
@@ -52,6 +53,18 @@ public class JsonHandler {
         }
     }
 
+    public static ItemStack getEnchantBook(String key, HumanEntity player) {
+        JsonObject json = JsonBucket.getInstance().findEnchantJson(key).orElse(null);
+        if (json == null || getGrassJson("EnchantBook") == null) return null;
+        ItemStack book = getGrassJson("EnchantBook").toItemStack();
+        if (book == null) return null;
+        book = putDynamicData(book, "Enchant/Of", json.get("Name").getAsString());
+        book = putDynamicData(book, "Enchant/Target", json.get("Target").getAsString());
+        book = putDynamicData(book, "CustomDisplayName", "魔法の本 / " + json.get("DisplayName").getAsString());
+        if (player != null) book = putDynamicData(book, "CreatorName", player.getName());
+        return book;
+    }
+
     public static ItemStack putUniqueName(ItemStack item, String uniqueName) {
         if (uniqueName == null) throw new IllegalArgumentException("uniqueName must not be null.");
 
@@ -83,30 +96,30 @@ public class JsonHandler {
 
     public static ItemStack damageItem(ItemStack item) {
         GrassJson json = getGrassJson(item);
-        if(json == null) return item;
-        if(!json.hasDynamicValue("Toughness")) return item;
+        if (json == null) return item;
+        if (!json.hasDynamicValue("Toughness")) return item;
         int toughness = json.getDynamicValue("Toughness").getAsMaskedInteger().orElse(100);
         int damage = 0;
-        if(toughness == 100) {
+        if (toughness == 100) {
             damage = 1;
-        } else if(toughness >= 100) {
+        } else if (toughness >= 100) {
             damage = Math.random() <= 100.0 / (double) toughness ? 1 : 0;
         } else {
             damage = Math.random() <= ((double) (100 - toughness)) / 100.0 ? 2 : 1;
         }
 
         int currentDurability = json.getDynamicValue("CurrentDurability").getAsMaskedInteger().orElse(-1);
-        if(currentDurability < 0) return item;
-        return putDynamicData(item,"CurrentDurability", Math.max(0, currentDurability - damage));
+        if (currentDurability < 0) return item;
+        return putDynamicData(item, "CurrentDurability", Math.max(0, currentDurability - damage));
     }
 
     public static ItemStack repairItem(ItemStack item, int amount) {
         GrassJson json = getGrassJson(item);
-        if(json == null) return item;
+        if (json == null) return item;
         int currentDurability = json.getDynamicValue("CurrentDurability").getAsMaskedInteger().orElse(-1);
         int maxDurability = json.getDynamicValue("MaxDurability").getAsMaskedInteger().orElse(-1);
         System.out.println(currentDurability + "/" + maxDurability);
-        if(currentDurability < 0 || maxDurability < 0) return item;
+        if (currentDurability < 0 || maxDurability < 0) return item;
         System.out.println("hey");
         return putDynamicData(item, "CurrentDurability", Math.min(currentDurability + amount, maxDurability));
     }

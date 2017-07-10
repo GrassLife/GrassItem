@@ -83,7 +83,7 @@ public class ItemPacketRewriter {
         }
 
         // Enchantの設定
-        for(JsonObject enchant: json.getEnchantList()) {
+        for (JsonObject enchant : json.getEnchantList()) {
             name += enchant.get("DisplayName").getAsString() + " ";
         }
 
@@ -96,17 +96,17 @@ public class ItemPacketRewriter {
         lore.add(ChatColor.GRAY + json.getDescription());
 
         // Loreの設定
-        for(RewriteType type: RewriteType.values()) {
+        for (RewriteType type : RewriteType.values()) {
             ItemRewriteEvent event = new ItemRewriteEvent(type, json);
             Bukkit.getServer().getPluginManager().callEvent(event);
-            if(event.isShowable()) lore.addAll(event.getLore());
+            if (event.isShowable()) lore.addAll(event.getLore());
         }
 
-        if(json.hasItemTag("Tool")) {
+        if (json.hasItemTag("Tool")) {
             StringBuilder builder = new StringBuilder();
             item.setDurability((short) ((item.getData().getItemType().getMaxDurability()) - (item.getData().getItemType().getMaxDurability() * jsonReader.getDurabilityRate())));
             lore.add("");
-            for(int i = 0; i < 10; i++) {
+            for (int i = 0; i < 10; i++) {
                 builder.append(getEffectBarElement(json.getDynamicValue("EffectBar/" + i).getAsMaskedDouble().orElse(0.0), i == jsonReader.getDurabilityRateIndex()));
             }
             lore.add(ChatColor.GRAY + "性能: " + ChatColor.WHITE + "[" + builder.toString() + ChatColor.WHITE + "]");
@@ -114,8 +114,17 @@ public class ItemPacketRewriter {
             lore.add(ChatColor.GRAY + "丈夫さ: " + json.getDynamicValue("Toughness").getAsMaskedInteger().orElse(100));
         }
 
-        if(json.hasDynamicValue("GatheringPower")) {
+        if (json.hasDynamicValue("GatheringPower")) {
             lore.add(ChatColor.GRAY + "採取力: " + json.getDynamicValue("GatheringPower").getAsMaskedInteger().orElse(0));
+        }
+        if (json.hasDynamicValue("EnchantPower")) {
+            lore.add(ChatColor.GRAY + "込められた魔力: Lv" + json.getDynamicValue("EnchantPower").getAsMaskedInteger().orElse(0));
+        }
+        if (json.hasDynamicValue("Enchant/Target")) {
+            lore.add(ChatColor.GRAY + "エンチャント対象: " + json.getDynamicValue("Enchant/Target").getAsMaskedString().orElse("None"));
+        }
+        if (json.hasDynamicValue("CreatorName")) {
+            lore.add(ChatColor.GRAY + "作製者: " + json.getDynamicValue("CreatorName").getAsMaskedString().orElse("???"));
         }
 
         meta.setLore(lore);
@@ -127,25 +136,25 @@ public class ItemPacketRewriter {
     private static String CURRENT = "▋";
 
     public static String getEffectBarElement(double effect, boolean current) {
-        if(effect <= 0.0) {
+        if (effect <= 0.0) {
             return ChatColor.DARK_GRAY + (current ? CURRENT : GAGE);
-        } else if(effect <= 0.2) {
+        } else if (effect <= 0.2) {
             return ChatColor.DARK_RED + (current ? CURRENT : GAGE);
-        } else if(effect <= 0.4) {
+        } else if (effect <= 0.4) {
             return ChatColor.RED + (current ? CURRENT : GAGE);
-        } else if(effect <= 0.6) {
+        } else if (effect <= 0.6) {
             return ChatColor.GOLD + (current ? CURRENT : GAGE);
-        } else if(effect <= 0.8) {
+        } else if (effect <= 0.8) {
             return ChatColor.YELLOW + (current ? CURRENT : GAGE);
-        } else if(effect <= 1.0) {
+        } else if (effect <= 1.0) {
             return ChatColor.GREEN + (current ? CURRENT : GAGE);
-        } else if(effect <= 1.2) {
+        } else if (effect <= 1.2) {
             return ChatColor.DARK_AQUA + (current ? CURRENT : GAGE);
-        } else if(effect <= 1.4) {
+        } else if (effect <= 1.4) {
             return ChatColor.BLUE + (current ? CURRENT : GAGE);
-        } else if(effect <= 1.6) {
+        } else if (effect <= 1.6) {
             return ChatColor.WHITE + (current ? CURRENT : GAGE);
-        } else if(effect <= 1.8) {
+        } else if (effect <= 1.8) {
             return ChatColor.LIGHT_PURPLE + (current ? CURRENT : GAGE);
         } else {
             return ChatColor.WHITE + (current ? CURRENT : GAGE);

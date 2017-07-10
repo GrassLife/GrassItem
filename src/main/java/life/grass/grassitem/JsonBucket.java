@@ -6,10 +6,8 @@ import com.google.gson.JsonObject;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class JsonBucket {
     private static final String ITEMS_DIR_PATH = GrassItem.getInstance().getDataFolder().getPath() + File.separator + "items";
@@ -42,6 +40,19 @@ public class JsonBucket {
         return Optional.ofNullable(enchantsMap.getOrDefault(name.replace("\"", ""), null));
     }
 
+    public String determineEnchant(int level) {
+        List<JsonObject> enchants = new ArrayList<>();
+        for (JsonObject enchant : enchantsMap.values()) {
+            if (enchant.get("MaxLevel") != null && enchant.get("MinLevel") != null && enchant.get("Target") != null) {
+                if (enchant.get("MaxLevel").getAsInt() >= level && level >= enchant.get("MinLevel").getAsInt()) {
+                    enchants.add(enchant);
+                }
+            }
+        }
+        Collections.shuffle(enchants);
+        return enchants.get(0).get("Name").getAsString();
+    }
+
     public void refillBucket() {
         grassJsonMap = new HashMap<>();
         enchantsMap = new HashMap<>();
@@ -67,6 +78,7 @@ public class JsonBucket {
             root = gson.fromJson(br, JsonObject.class);
         } catch (Exception ex) {
             ex.printStackTrace();
+            System.out.println(file.getName());
             root = null;
         }
 
