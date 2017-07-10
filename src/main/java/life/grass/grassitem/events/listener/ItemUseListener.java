@@ -43,6 +43,23 @@ public class ItemUseListener implements Listener {
                 player.getInventory().setItemInOffHand(target);
                 player.updateInventory();
                 e.setCancelled(true);
+            } else if(json.hasDynamicValue("RepairPower") && targetJson.hasItemTag("InstantRepairable")) {
+                consume(item);
+                consume(item);
+                player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1.0f, 1.0f);
+                player.getWorld().spawnParticle(
+                        Particle.EXPLOSION_NORMAL,
+                        player.getEyeLocation(),
+                        20,
+                        0.25,
+                        0.25,
+                        0.25,
+                        0);
+                System.out.println(json.getDynamicValue("RepairPower").getAsMaskedDouble().orElse(0.0));
+                target = JsonHandler.repairItem(target, json.getDynamicValue("RepairPower").getAsMaskedInteger().orElse(0));
+                player.getInventory().setItemInOffHand(target);
+                player.updateInventory();
+                e.setCancelled(true);
             }
         }
     }
