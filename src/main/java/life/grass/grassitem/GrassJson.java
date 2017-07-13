@@ -50,7 +50,11 @@ public class GrassJson {
     }
 
     public boolean hasDynamicValue(String dynamicKey) {
-        return hasDynamicValueInItem(dynamicKey) || hasDynamicValueInJson(dynamicKey);
+        boolean enchantFlag = false;
+        for(JsonElement e: getEnchantList(dynamicKey)) {
+            if(e != null) enchantFlag = true;
+        }
+        return hasDynamicValueInItem(dynamicKey) || hasDynamicValueInJson(dynamicKey) || enchantFlag;
     }
 
     public boolean hasDynamicValueInJson(String dynamicKey) {
@@ -100,6 +104,7 @@ public class GrassJson {
             String enchantName = maskJsonObject.get(pos) == null
                     ? dynamicData != null && dynamicData.get(pos) != null ? dynamicData.get(pos).getAsString() : ""
                     : maskJsonObject.get(pos).getAsString();
+            if(enchantName.equals("")) continue;
             JsonBucket.getInstance().findEnchantJson(enchantName).ifPresent(e -> list.add(e));
         }
         return list;
