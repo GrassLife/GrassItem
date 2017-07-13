@@ -153,7 +153,7 @@ public class ItemPacketRewriter {
         } else if (effect <= 1.4) {
             return ChatColor.BLUE + (current ? CURRENT : GAGE);
         } else if (effect <= 1.6) {
-            return ChatColor.WHITE + (current ? CURRENT : GAGE);
+            return ChatColor.AQUA + (current ? CURRENT : GAGE);
         } else if (effect <= 1.8) {
             return ChatColor.LIGHT_PURPLE + (current ? CURRENT : GAGE);
         } else {
