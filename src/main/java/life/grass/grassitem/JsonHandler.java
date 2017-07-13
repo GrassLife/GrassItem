@@ -118,9 +118,7 @@ public class JsonHandler {
         if (json == null) return item;
         int currentDurability = json.getDynamicValue("CurrentDurability").getAsMaskedInteger().orElse(-1);
         int maxDurability = json.getDynamicValue("MaxDurability").getAsMaskedInteger().orElse(-1);
-        System.out.println(currentDurability + "/" + maxDurability);
         if (currentDurability < 0 || maxDurability < 0) return item;
-        System.out.println("hey");
         return putDynamicData(item, "CurrentDurability", Math.min(currentDurability + amount, maxDurability));
     }
 

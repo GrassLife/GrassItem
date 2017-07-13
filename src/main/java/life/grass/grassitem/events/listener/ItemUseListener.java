@@ -17,7 +17,7 @@ import org.bukkit.inventory.ItemStack;
 public class ItemUseListener implements Listener {
     @EventHandler
     public void onUse(PlayerInteractEvent e) {
-        if(e.getAction().equals(Action.RIGHT_CLICK_AIR) || e.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
+        if(e.getAction().equals(Action.RIGHT_CLICK_AIR)) {
             if(!e.hasItem()) return;
             Player player = e.getPlayer();
 
@@ -45,7 +45,6 @@ public class ItemUseListener implements Listener {
                 e.setCancelled(true);
             } else if(json.hasDynamicValue("RepairPower") && targetJson.hasItemTag("InstantRepairable")) {
                 consume(item);
-                consume(item);
                 player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1.0f, 1.0f);
                 player.getWorld().spawnParticle(
                         Particle.EXPLOSION_NORMAL,
@@ -55,7 +54,6 @@ public class ItemUseListener implements Listener {
                         0.25,
                         0.25,
                         0);
-                System.out.println(json.getDynamicValue("RepairPower").getAsMaskedDouble().orElse(0.0));
                 target = JsonHandler.repairItem(target, json.getDynamicValue("RepairPower").getAsMaskedInteger().orElse(0));
                 player.getInventory().setItemInOffHand(target);
                 player.updateInventory();
