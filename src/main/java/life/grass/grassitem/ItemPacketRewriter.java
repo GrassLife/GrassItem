@@ -6,6 +6,7 @@ import com.comphenix.protocol.events.ListenerPriority;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
 import com.google.gson.JsonObject;
+import life.grass.grassitem.ItemData.WeaponSkill;
 import life.grass.grassitem.events.ItemRewriteEvent;
 import life.grass.grassitem.events.RewriteType;
 import org.bukkit.Bukkit;
@@ -125,6 +126,9 @@ public class ItemPacketRewriter {
         }
         if (json.hasDynamicValue("CreatorName")) {
             lore.add(ChatColor.GRAY + "作製者: " + json.getDynamicValue("CreatorName").getAsMaskedString().orElse("???"));
+        }
+        if(json.hasDynamicValue("WeaponSkill/Type")) {
+            lore.add(ChatColor.GRAY + "スキル: " + WeaponSkill.getSkill(json.getDynamicValue("WeaponSkill/Type").getAsMaskedString().orElse("")).getLabel());
         }
 
         meta.setLore(lore);
