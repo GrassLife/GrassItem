@@ -12,31 +12,36 @@ import java.util.Arrays;
 public enum WeaponSkill {
     BLOW("打撃") {
         @Override
-        public double apply(GrassPlayer player) {
-            return ((double) player.getStatus(StatusType.STRENGTH)) * 0.05;
+        public double apply(Player player) {
+            GrassPlayer grassPlayer = GrassPlayer.findOrCreate(player);
+            return ((double) grassPlayer.getStatus(StatusType.STRENGTH)) * 0.05;
         }
     },
     TECHNIQUE("技巧") {
         @Override
-        public double apply(GrassPlayer player) {
-            return ((double) player.getStatus(StatusType.STRENGTH)) * 0.05 + ((double) player.getStatus(StatusType.DEXTERITY)) * 0.05;
+        public double apply(Player player) {
+            GrassPlayer grassPlayer = GrassPlayer.findOrCreate(player);
+            return ((double) grassPlayer.getStatus(StatusType.STRENGTH)) * 0.05 + ((double) grassPlayer.getStatus(StatusType.DEXTERITY)) * 0.05;
         }
     },
     HEAVY_BLOW("重打") {
         @Override
-        public double apply(GrassPlayer player) {
-            return ((double) player.getStatus(StatusType.STRENGTH)) * 0.05 + ((double) player.getStatus(StatusType.VITALITY)) * 0.05;
+        public double apply(Player player) {
+            GrassPlayer grassPlayer = GrassPlayer.findOrCreate(player);
+            return ((double) grassPlayer.getStatus(StatusType.STRENGTH)) * 0.05 + ((double) grassPlayer.getStatus(StatusType.VITALITY)) * 0.05;
         }
     },
     SNIPE("狙撃") {
         @Override
-        public double apply(GrassPlayer player) {
-            return ((double) player.getStatus(StatusType.DEXTERITY)) * 0.1;
+        public double apply(Player player) {
+            GrassPlayer grassPlayer = GrassPlayer.findOrCreate(player);
+            return ((double) grassPlayer.getStatus(StatusType.DEXTERITY)) * 0.1;
         }
     },
     NOTHING("なし") {
         @Override
-        public double apply(GrassPlayer player) {
+        public double apply(Player player) {
+            GrassPlayer grassPlayer = GrassPlayer.findOrCreate(player);
             return 0;
         }
     };
@@ -47,7 +52,7 @@ public enum WeaponSkill {
         this.label = label;
     }
 
-    public abstract double apply(GrassPlayer player);
+    public abstract double apply(Player player);
 
     public String getLabel() {
         return this.label;
